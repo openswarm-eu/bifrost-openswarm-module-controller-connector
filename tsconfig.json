@@ -1,0 +1,18 @@
+{
+    "extends": "@tsconfig/node16/tsconfig.json",
+    "files" :["src/EnergyCommunityControllerConnector.ts"],
+     "compilerOptions": {
+        "outDir": "./build",
+        "noImplicitAny": false,
+        "declaration": true,
+        "allowSyntheticDefaultImports": true,
+        "allowJs": false,
+        "sourceMap": true,
+        "esModuleInterop": true
+     },
+    "ts-node": { 
+        "esm": true
+    },
+    "include": ["src/"],
+    "exclude": ["node_modules/", "build/"]
+}

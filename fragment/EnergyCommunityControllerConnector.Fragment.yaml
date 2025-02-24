@@ -1,0 +1,49 @@
+type: DIRECTORY-FRAGMENT
+name: ModuleTemplateFragment
+
+structures: {}
+
+dynamics:
+  ENERGY-COMMUNITY:
+    domain: powergrid
+    name: Energy Community
+    description: Member of which energy community
+    visible: true
+    actionable: true
+    alwaysUpdate: false
+    defaultValue: None
+    pinnable: true
+    dataLabels: [ 'Energy Community' ]
+    chartType: TEXT
+    schema:
+      type: string
+      enum:
+        - None
+        - A
+        - B
+    tags:
+      - energyCommunityController
+
+  CHGSTATION-POWER:
+    domain: powergrid
+    name: Chargestation Power
+    description: The currently consumed power of this Chargestation
+    visible: true
+    actionable: false
+    alwaysUpdate: false
+    defaultValue: 0
+    pinnable: true
+    dataLabels: [ 'kW' ]
+    chartType: LINE
+    schema:
+      type: number
+    tags:
+      - energyCommunityController
+
+
+mappings:
+  ENERGY-COMMUNITY:
+    - CHARGING-POLE
+    - SOLAR-PANEL
+  CHGSTATION-POWER:
+    - CHARGING-POLE

@@ -1,0 +1,32 @@
+{
+    "name": "energyCommunityControllerConnector",
+    "version": "1.0.0",
+    "description": "ZERO Module Template",
+    "type": "module",
+    "scripts": {
+        "prestart": "npm run tsc",
+        "start": "node ./build/EnergyCommunityControllerConnector.js",
+        "start:docker": "npm run tsc && cross-env MODULE_URL=http://host.docker.internal:1809 node ./build/EnergyCommunityControllerConnector.js",
+        "module": "node ./build/EnergyCommunityControllerConnector.js",
+        "tsc": "tsc -p tsconfig.json",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "debug": "tsx ./src/EnergyCommunityControllerConnector.ts",
+        "debug:docker": "cross-env MODULE_URL=http://host.docker.internal:1809 tsx ./src/EnergyCommunityControllerConnector.ts"
+    },
+    "main": "./build/EnergyCommunityControllerConnector.js",
+    "author": "anonymous",
+    "license": "ISC",
+    "dependencies": {
+        "@tsconfig/node16": "^16.1.1",
+        "bifrost-zero-common": "^1.0.1",
+        "bifrost-zero-sdk": "^1.0.10",
+        "cross-env": "^7.0.3",
+        "js-yaml": "^4.1.0",
+        "mqtt": "^5.10.3",
+        "node-fetch": "^3.3.2",
+        "socket.io-client": "^4.5.3",
+        "tsx": "^4.19.2",
+        "typescript": "^5.7.3",
+        "uuid": "^11.1.0"
+    }
+}
