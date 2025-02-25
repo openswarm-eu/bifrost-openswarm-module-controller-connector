@@ -137,7 +137,8 @@ const logic = {
                 if (newEnergyCommunity != "None") {
                     context.log.write(`start charger with id: ${charger.id} for energy community: ${newEnergyCommunity}`)
 
-                    let childArguments: string[] = ["run", "-d", "--name", charger.id, "charger", "-url", "tcp://host.docker.internal:1883", "-id", charger.id, "-energyCommunityId", newEnergyCommunity]
+                    let childArguments: string[] = ["run", "-d", "--name", charger.id, "cr.siemens.com/openswarm/energy-community-controller/charger",
+                        "-url", "tcp://host.docker.internal:1883", "-id", charger.id, "-energyCommunityId", newEnergyCommunity]
 
                     if (storageEntry.numberOfMembers.get(newEnergyCommunity) == 0) {
                         childArguments.push("-l")
@@ -178,7 +179,8 @@ const logic = {
                 if (newEnergyCommunity != "None") {
                     context.log.write(`start pv with ID id: ${pv.id} for energy community: ${newEnergyCommunity}`)
 
-                    let childArguments: string[] = ["run", "-d", "--name", pv.id, "pv", "-url", "tcp://host.docker.internal:1883", "-id", pv.id, "-energyCommunityId", newEnergyCommunity]
+                    let childArguments: string[] = ["run", "-d", "--name", pv.id, "cr.siemens.com/openswarm/energy-community-controller/pv",
+                        "-url", "tcp://host.docker.internal:1883", "-id", pv.id, "-energyCommunityId", newEnergyCommunity]
 
                     if (storageEntry.numberOfMembers.get(newEnergyCommunity) == 0) {
                         childArguments.push("-l")
