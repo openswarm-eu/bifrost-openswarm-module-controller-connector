@@ -153,6 +153,9 @@ const logic = {
             }
 
             result.addSeries({ dynamicId: charger.chargingSetPointDynamic, values: [charger.chargingSetPoint] })
+
+            const activePower = dynamicsById[charger.activePowerDynamic]
+            result.addSeries({ dynamicId: charger.activePowerDynamic, values: [[activePower[0] + charger.chargingSetPoint/3, activePower[1] + charger.chargingSetPoint/3, activePower[2] + charger.chargingSetPoint/3]] })
         }
 
         for (const pv of storageEntry.pvs) {
@@ -195,7 +198,7 @@ const logic = {
 
             if (newEnergyCommunity != "None") {
                 const production = dynamicsById[pv.productionDynamic]
-                mqttConnector.publishPVProduction(pv.id, (production[0] + production[1] + production[2]))
+                mqttConnector.publishPVProduction(pv.id, production[0] + production[1] + production[2])
             }
         }
 
