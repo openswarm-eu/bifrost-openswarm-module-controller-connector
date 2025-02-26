@@ -7,8 +7,7 @@ import { v4 } from 'uuid'
 const TYPEID = {
     ACTIVE_POWER_3P: "ACTIVE-POWER-3P",
     CHGSTATION_POWER: "CHGSTATION-POWER",
-    ENERGY_COMMUNITY: "ENERGY-COMMUNITY",
-    INSTALLED_PV_POWER: "INSTALLED-PV-POWER"
+    ENERGY_COMMUNITY: "ENERGY-COMMUNITY"
 }
 
 interface Node {
@@ -25,7 +24,6 @@ interface Charger extends Node {
 
 interface PV extends Node {
     productionDynamic: string
-    installedPVPowerDynamic: string
 }
 
 type storageEntry = {
@@ -77,7 +75,7 @@ const logic = {
                 }
 
                 if (state.structures.entities[elementId].typeId == "SOLAR-PANEL") {
-                    const pv: PV = { id: v4(), energyCommunity: "None", energyCommunityDynamic: "", productionDynamic: "", installedPVPowerDynamic: "" }
+                    const pv: PV = { id: v4(), energyCommunity: "None", energyCommunityDynamic: "", productionDynamic: "" }
                     storageEntry.pvs.push(pv)
 
                     for (const dynamicID of state.structures.entities[elementId].dynamicIds) {
@@ -87,9 +85,6 @@ const logic = {
                                 break
                             case TYPEID.ACTIVE_POWER_3P:
                                 pv.productionDynamic = dynamicID
-                                break
-                            case TYPEID.INSTALLED_PV_POWER:
-                                pv.installedPVPowerDynamic = dynamicID
                                 break
                         }
                     }
@@ -200,8 +195,7 @@ const logic = {
 
             if (newEnergyCommunity != "None") {
                 const production = dynamicsById[pv.productionDynamic]
-                const installedPVPower = dynamicsById[pv.installedPVPowerDynamic]
-                mqttConnector.publishPVProduction(pv.id, (production[0] + production[1] + production[2]) * installedPVPower)
+                mqttConnector.publishPVProduction(pv.id, (production[0] + production[1] + production[2]))
             }
         }
 
@@ -219,7 +213,7 @@ const m = new BifrostZeroModule({
     initCallback: logic.initFn,
     updateCallback: logic.updateFn,
     fragmentFile: './fragment/EnergyCommunityControllerConnector.Fragment.yaml',
-    subscriptions: [TYPEID.ACTIVE_POWER_3P, TYPEID.ENERGY_COMMUNITY, TYPEID.INSTALLED_PV_POWER],
+    subscriptions: [TYPEID.ACTIVE_POWER_3P, TYPEID.ENERGY_COMMUNITY],
     samplingRate: 900,
     moduleURL: process.env.MODULE_URL || 'http://localhost:1809',
     bifrostURL: process.env.BIFROST_URL || 'http://localhost:9091',
