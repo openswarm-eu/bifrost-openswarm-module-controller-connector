@@ -3,17 +3,24 @@ import { BifrostZeroModule } from 'bifrost-zero-sdk'
 import { MQTTConnector } from './MQTTConnector.js'
 import * as child from 'child_process';
 import { v4 } from 'uuid'
-import mqtt from 'mqtt';
 
 const TYPEID = {
     ACTIVE_POWER_3P: "ACTIVE-POWER-3P",
+    CHARGING_POLE: "CHARGING-POLE",
     CHGSTATION_POWER: "CHGSTATION-POWER",
-    ENERGY_COMMUNITY: "ENERGY-COMMUNITY"
+    ENERGY_COMMUNITY: "ENERGY-COMMUNITY",
+    SOLAR_PANEL: "SOLAR-PANEL"
+}
+
+const ENERGYCOMMUNITY = {
+    NONE: "None",
+    A: "A",
+    B: "B"
 }
 
 interface Node {
     id: string
-    energyCommunity: "None" | "A" | "B"
+    energyCommunity: typeof ENERGYCOMMUNITY.NONE | typeof ENERGYCOMMUNITY.A | typeof ENERGYCOMMUNITY.B
     energyCommunityDynamic: string
 }
 
@@ -42,12 +49,12 @@ const logic = {
         if (localStorage.has(experimentId)) {
             const storageEntry = localStorage.get(experimentId)
 
-            storageEntry!.chargers.filter(ch => ch.energyCommunity != "None").forEach(ch => {
+            storageEntry!.chargers.filter(ch => ch.energyCommunity != ENERGYCOMMUNITY.NONE).forEach(ch => {
                 child.execSync(`docker stop ${ch.id}`)
                 child.execSync(`docker rm ${ch.id}`)
             });
 
-            storageEntry!.pvs.filter(pv => pv.energyCommunity != "None").forEach(pv => {
+            storageEntry!.pvs.filter(pv => pv.energyCommunity != ENERGYCOMMUNITY.NONE).forEach(pv => {
                 child.execSync(`docker stop ${pv.id}`)
                 child.execSync(`docker rm ${pv.id}`)
             });
@@ -59,20 +66,20 @@ const logic = {
             numberOfMembers: new Map()
         }
 
-        storageEntry.numberOfMembers.set("A", 0)
-        storageEntry.numberOfMembers.set("B", 0)
+        storageEntry.numberOfMembers.set(ENERGYCOMMUNITY.A, 0)
+        storageEntry.numberOfMembers.set(ENERGYCOMMUNITY.B, 0)
 
         localStorage.set(experimentId, storageEntry)
 
         for (const elementId of state.structures.ids) {
             if (state.structures.entities[elementId].experimentId == experimentId) {
-                if (state.structures.entities[elementId].typeId == "CHARGING-POLE") {
-                    const charger: Charger = { id: v4(), energyCommunity: "None", energyCommunityDynamic: "", chargingSetPointDynamic: "", activePowerDynamic: "", chargingSetPoint: 0 }
+                if (state.structures.entities[elementId].typeId == TYPEID.CHARGING_POLE) {
+                    const charger: Charger = { id: v4(), energyCommunity: ENERGYCOMMUNITY.NONE, energyCommunityDynamic: "", chargingSetPointDynamic: "", activePowerDynamic: "", chargingSetPoint: 0 }
                     storageEntry.chargers.push(charger)
 
                     for (const dynamicID of state.structures.entities[elementId].dynamicIds) {
                         switch (state.dynamics.entities[dynamicID].typeId) {
-                            case "ENERGY-COMMUNITY":
+                            case TYPEID.ENERGY_COMMUNITY:
                                 charger.energyCommunityDynamic = dynamicID
                                 break
                             case TYPEID.CHGSTATION_POWER:
@@ -89,13 +96,13 @@ const logic = {
                     }
                 }
 
-                if (state.structures.entities[elementId].typeId == "SOLAR-PANEL") {
-                    const pv: PV = { id: v4(), energyCommunity: "None", energyCommunityDynamic: "", productionDynamic: "" }
+                if (state.structures.entities[elementId].typeId == TYPEID.SOLAR_PANEL) {
+                    const pv: PV = { id: v4(), energyCommunity: ENERGYCOMMUNITY.NONE, energyCommunityDynamic: "", productionDynamic: "" }
                     storageEntry.pvs.push(pv)
 
                     for (const dynamicID of state.structures.entities[elementId].dynamicIds) {
                         switch (state.dynamics.entities[dynamicID].typeId) {
-                            case "ENERGY-COMMUNITY":
+                            case TYPEID.ENERGY_COMMUNITY:
                                 pv.energyCommunityDynamic = dynamicID
                                 break
                             case TYPEID.ACTIVE_POWER_3P:
@@ -134,7 +141,7 @@ const logic = {
             const oldEnergyCommunity = charger.energyCommunity
 
             if (newEnergyCommunity != oldEnergyCommunity) {
-                if (oldEnergyCommunity != "None") {
+                if (oldEnergyCommunity != ENERGYCOMMUNITY.NONE) {
                     context.log.write(`stop charger with id: ${charger.id}`)
 
                     mqttConnector.unsubscribeChargingSetPoint(charger.id)
@@ -148,7 +155,7 @@ const logic = {
                     storageEntry.numberOfMembers.set(oldEnergyCommunity, newNumberOfMembers)
                 }
 
-                if (newEnergyCommunity != "None") {
+                if (newEnergyCommunity != ENERGYCOMMUNITY.NONE) {
                     context.log.write(`start charger with id: ${charger.id} for energy community: ${newEnergyCommunity}`)
 
                     let childArguments: string[] = ["run", "-d", "--name", charger.id, "cr.siemens.com/openswarm/energy-community-controller/charger",
@@ -182,7 +189,7 @@ const logic = {
             const oldEnergyCommunity = pv.energyCommunity
 
             if (newEnergyCommunity != oldEnergyCommunity) {
-                if (oldEnergyCommunity != "None") {
+                if (oldEnergyCommunity != ENERGYCOMMUNITY.NONE) {
                     context.log.write(`kill pv with id: ${pv.id}`)
 
                     // TODO: what to do if leader election node?
@@ -193,7 +200,7 @@ const logic = {
                     storageEntry.numberOfMembers.set(oldEnergyCommunity, newNumberOfMembers)
                 }
 
-                if (newEnergyCommunity != "None") {
+                if (newEnergyCommunity != ENERGYCOMMUNITY.NONE) {
                     context.log.write(`start pv with ID id: ${pv.id} for energy community: ${newEnergyCommunity}`)
 
                     let childArguments: string[] = ["run", "-d", "--name", pv.id, "cr.siemens.com/openswarm/energy-community-controller/pv",
@@ -215,7 +222,7 @@ const logic = {
                 pv.energyCommunity = newEnergyCommunity
             }
 
-            if (newEnergyCommunity != "None") {
+            if (newEnergyCommunity != ENERGYCOMMUNITY.NONE) {
                 const production = dynamicsById[pv.productionDynamic]
                 mqttConnector.publishPVProduction(pv.id, production[0] + production[1] + production[2])
             }
@@ -248,14 +255,14 @@ process.on('SIGINT', function() {
 
     for (const storageEntry of localStorage.values()) {
         for (const charger of storageEntry.chargers) {
-            if (charger.energyCommunity != "None") {
+            if (charger.energyCommunity != ENERGYCOMMUNITY.NONE) {
                 child.execSync(`docker stop ${charger.id}`)
                 child.execSync(`docker rm ${charger.id}`)
             }
         }
 
         for (const pv of storageEntry.pvs) {
-            if (pv.energyCommunity != "None") {
+            if (pv.energyCommunity != ENERGYCOMMUNITY.NONE) {
                 child.execSync(`docker stop ${pv.id}`)
                 child.execSync(`docker rm ${pv.id}`)
             }
