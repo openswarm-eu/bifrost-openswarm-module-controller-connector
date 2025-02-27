@@ -44,4 +44,9 @@ export class MQTTConnector {
         this.client?.unsubscribe(topic)
         this.callbacks.delete(topic)
     }
+
+    disconnect() {
+        this.client?.end()
+        this.client = undefined
+    }
 }

@@ -3,6 +3,7 @@ import { BifrostZeroModule } from 'bifrost-zero-sdk'
 import { MQTTConnector } from './MQTTConnector.js'
 import * as child from 'child_process';
 import { v4 } from 'uuid'
+import mqtt from 'mqtt';
 
 const TYPEID = {
     ACTIVE_POWER_3P: "ACTIVE-POWER-3P",
@@ -261,5 +262,6 @@ process.on('SIGINT', function() {
         }
     }
 
+    mqttConnector.disconnect()
     process.exit()
 });
