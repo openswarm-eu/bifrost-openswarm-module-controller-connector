@@ -22,6 +22,8 @@ interface Node {
     id: string
     energyCommunity: typeof ENERGYCOMMUNITY.NONE | typeof ENERGYCOMMUNITY.A | typeof ENERGYCOMMUNITY.B
     energyCommunityDynamic: string
+    leaderElectionParticipant: boolean
+    dockerImage: string
 }
 
 interface Charger extends Node {
@@ -49,15 +51,8 @@ const logic = {
         if (localStorage.has(experimentId)) {
             const storageEntry = localStorage.get(experimentId)
 
-            storageEntry!.chargers.filter(ch => ch.energyCommunity != ENERGYCOMMUNITY.NONE).forEach(ch => {
-                child.execSync(`docker stop ${ch.id}`)
-                child.execSync(`docker rm ${ch.id}`)
-            });
-
-            storageEntry!.pvs.filter(pv => pv.energyCommunity != ENERGYCOMMUNITY.NONE).forEach(pv => {
-                child.execSync(`docker stop ${pv.id}`)
-                child.execSync(`docker rm ${pv.id}`)
-            });
+            storageEntry!.chargers.filter(ch => ch.energyCommunity != ENERGYCOMMUNITY.NONE).forEach(ch => stopNode(ch.id));
+            storageEntry!.pvs.filter(pv => pv.energyCommunity != ENERGYCOMMUNITY.NONE).forEach(pv => stopNode(pv.id));
         }
 
         let storageEntry = {
@@ -74,7 +69,16 @@ const logic = {
         for (const elementId of state.structures.ids) {
             if (state.structures.entities[elementId].experimentId == experimentId) {
                 if (state.structures.entities[elementId].typeId == TYPEID.CHARGING_POLE) {
-                    const charger: Charger = { id: v4(), energyCommunity: ENERGYCOMMUNITY.NONE, energyCommunityDynamic: "", chargingSetPointDynamic: "", activePowerDynamic: "", chargingSetPoint: 0 }
+                    const charger: Charger = {
+                        id: v4(),
+                        energyCommunity: ENERGYCOMMUNITY.NONE,
+                        energyCommunityDynamic: "",
+                        leaderElectionParticipant: false,
+                        dockerImage: "cr.siemens.com/openswarm/energy-community-controller/charger",
+                        chargingSetPointDynamic: "",
+                        activePowerDynamic: "",
+                        chargingSetPoint: 0
+                    }
                     storageEntry.chargers.push(charger)
 
                     for (const dynamicID of state.structures.entities[elementId].dynamicIds) {
@@ -97,7 +101,13 @@ const logic = {
                 }
 
                 if (state.structures.entities[elementId].typeId == TYPEID.SOLAR_PANEL) {
-                    const pv: PV = { id: v4(), energyCommunity: ENERGYCOMMUNITY.NONE, energyCommunityDynamic: "", productionDynamic: "" }
+                    const pv: PV = { 
+                        id: v4(),
+                        energyCommunity: ENERGYCOMMUNITY.NONE,
+                        energyCommunityDynamic: "",
+                        leaderElectionParticipant: false,
+                        dockerImage: "cr.siemens.com/openswarm/energy-community-controller/pv",
+                        productionDynamic: "" }
                     storageEntry.pvs.push(pv)
 
                     for (const dynamicID of state.structures.entities[elementId].dynamicIds) {
@@ -137,92 +147,115 @@ const logic = {
         }
 
         for (const charger of storageEntry.chargers) {
-            const newEnergyCommunity = dynamicsById[charger.energyCommunityDynamic]
             const oldEnergyCommunity = charger.energyCommunity
+            charger.energyCommunity = dynamicsById[charger.energyCommunityDynamic]
 
-            if (newEnergyCommunity != oldEnergyCommunity) {
+            if (charger.energyCommunity != oldEnergyCommunity) {
                 if (oldEnergyCommunity != ENERGYCOMMUNITY.NONE) {
-                    context.log.write(`stop charger with id: ${charger.id}`)
+                    context.log.write(`stop charger ${charger.id}`)
 
                     mqttConnector.unsubscribeChargingSetPoint(charger.id)
                     charger.chargingSetPoint = 0
 
-                    // TODO: what to do if leader election node?
-                    child.execSync(`docker stop ${charger.id}`)
-                    child.execSync(`docker rm ${charger.id}`)
-
+                    stopNode(charger.id)
                     const newNumberOfMembers = storageEntry.numberOfMembers.get(oldEnergyCommunity)! - 1
                     storageEntry.numberOfMembers.set(oldEnergyCommunity, newNumberOfMembers)
-                }
 
-                if (newEnergyCommunity != ENERGYCOMMUNITY.NONE) {
-                    context.log.write(`start charger with id: ${charger.id} for energy community: ${newEnergyCommunity}`)
+                    // if old node was part of leader election cluster, restart a node in same energy community to be part of leader election (if possible)
+                    if (charger.leaderElectionParticipant) {
+                        const newLeaderElectionParticipantNode = [...storageEntry.chargers, ...storageEntry.pvs].filter(node => node.energyCommunity == oldEnergyCommunity).find(node => !node.leaderElectionParticipant)
+                        if (newLeaderElectionParticipantNode !== undefined) {
+                            context.log.write(`${charger.id} was part of leader election cluster, restart ${newLeaderElectionParticipantNode.id} to replace it`)
+                            stopNode(newLeaderElectionParticipantNode.id)
 
-                    let childArguments: string[] = ["run", "-d", "--name", charger.id, "cr.siemens.com/openswarm/energy-community-controller/charger",
-                        "-url", "tcp://host.docker.internal:1883", "-id", charger.id, "-energyCommunityId", newEnergyCommunity]
-
-                    if (storageEntry.numberOfMembers.get(newEnergyCommunity) == 0) {
-                        childArguments.push("-l")
-                        childArguments.push("-b")
-                    } else if (storageEntry.numberOfMembers.get(newEnergyCommunity)! < 3) {
-                        childArguments.push("-l")
+                            newLeaderElectionParticipantNode.leaderElectionParticipant = true
+                            if (storageEntry.numberOfMembers.get(oldEnergyCommunity) == 1) {
+                                startNode(newLeaderElectionParticipantNode, true)
+                            } else {
+                                startNode(newLeaderElectionParticipantNode, false)
+                            }
+                        }
                     }
 
-                    child.spawn("docker", childArguments)
-
-                    mqttConnector.subscribeChargingSetPoint(charger.id, (chargingSetPoint => charger.chargingSetPoint = chargingSetPoint))
-                    const newNumberOfMembers = storageEntry.numberOfMembers.get(newEnergyCommunity)! + 1
-                    storageEntry.numberOfMembers.set(newEnergyCommunity, newNumberOfMembers)
+                    charger.leaderElectionParticipant = false
                 }
 
-                charger.energyCommunity = newEnergyCommunity
+                if (charger.energyCommunity != ENERGYCOMMUNITY.NONE) {
+                    context.log.write(`start charger ${charger.id} for energy community ${charger.energyCommunity}`)
+
+                    if (storageEntry.numberOfMembers.get(charger.energyCommunity) == 0) {
+                        charger.leaderElectionParticipant = true
+                        startNode(charger, true)
+                    } else if (storageEntry.numberOfMembers.get(charger.energyCommunity)! < 3) {
+                        charger.leaderElectionParticipant = true
+                        startNode(charger, false)
+                    } else {
+                        startNode(charger, false)
+                    }
+
+                    mqttConnector.subscribeChargingSetPoint(charger.id, (chargingSetPoint => charger.chargingSetPoint = chargingSetPoint))
+                    const newNumberOfMembers = storageEntry.numberOfMembers.get(charger.energyCommunity)! + 1
+                    storageEntry.numberOfMembers.set(charger.energyCommunity, newNumberOfMembers)
+                }
             }
 
             result.addSeries({ dynamicId: charger.chargingSetPointDynamic, values: [charger.chargingSetPoint] })
 
             const activePower = dynamicsById[charger.activePowerDynamic]
-            result.addSeries({ dynamicId: charger.activePowerDynamic, values: [[activePower[0] + charger.chargingSetPoint/3, activePower[1] + charger.chargingSetPoint/3, activePower[2] + charger.chargingSetPoint/3]] })
+            result.addSeries({ dynamicId: charger.activePowerDynamic, values: [[activePower[0] + charger.chargingSetPoint / 3, activePower[1] + charger.chargingSetPoint / 3, activePower[2] + charger.chargingSetPoint / 3]] })
         }
 
         for (const pv of storageEntry.pvs) {
-            const newEnergyCommunity = dynamicsById[pv.energyCommunityDynamic]
             const oldEnergyCommunity = pv.energyCommunity
+            pv.energyCommunity = dynamicsById[pv.energyCommunityDynamic]
 
-            if (newEnergyCommunity != oldEnergyCommunity) {
+            if (pv.energyCommunity != oldEnergyCommunity) {
                 if (oldEnergyCommunity != ENERGYCOMMUNITY.NONE) {
-                    context.log.write(`kill pv with id: ${pv.id}`)
+                    context.log.write(`stop pv ${pv.id}`)
 
                     // TODO: what to do if leader election node?
-                    child.execSync(`docker stop ${pv.id}`)
-                    child.execSync(`docker rm ${pv.id}`)
-
+                    stopNode(pv.id)
                     const newNumberOfMembers = storageEntry.numberOfMembers.get(oldEnergyCommunity)! - 1
                     storageEntry.numberOfMembers.set(oldEnergyCommunity, newNumberOfMembers)
-                }
 
-                if (newEnergyCommunity != ENERGYCOMMUNITY.NONE) {
-                    context.log.write(`start pv with ID id: ${pv.id} for energy community: ${newEnergyCommunity}`)
+                    // if old node was part of leader election cluster, restart a node in same energy community to be part of leader election (if possible)
+                    if (pv.leaderElectionParticipant) {
+                        const newLeaderElectionParticipantNode = [...storageEntry.chargers, ...storageEntry.pvs].filter(node => node.energyCommunity == oldEnergyCommunity).find(node => !node.leaderElectionParticipant)
+                        if (newLeaderElectionParticipantNode !== undefined) {
+                            context.log.write(`${pv.id} was part of leader election cluster, restart ${newLeaderElectionParticipantNode.id} to replace it`)
+                            stopNode(newLeaderElectionParticipantNode.id)
 
-                    let childArguments: string[] = ["run", "-d", "--name", pv.id, "cr.siemens.com/openswarm/energy-community-controller/pv",
-                        "-url", "tcp://host.docker.internal:1883", "-id", pv.id, "-energyCommunityId", newEnergyCommunity]
-
-                    if (storageEntry.numberOfMembers.get(newEnergyCommunity) == 0) {
-                        childArguments.push("-l")
-                        childArguments.push("-b")
-                    } else if (storageEntry.numberOfMembers.get(newEnergyCommunity)! < 3) {
-                        childArguments.push("-l")
+                            newLeaderElectionParticipantNode.leaderElectionParticipant = true
+                            if (storageEntry.numberOfMembers.get(oldEnergyCommunity) == 1) {
+                                startNode(newLeaderElectionParticipantNode, true)
+                            } else {
+                                startNode(newLeaderElectionParticipantNode, false)
+                            }
+                        }
                     }
 
-                    child.spawn("docker", childArguments)
-
-                    const newNumberOfMembers = storageEntry.numberOfMembers.get(newEnergyCommunity)! + 1
-                    storageEntry.numberOfMembers.set(newEnergyCommunity, newNumberOfMembers)
+                    pv.leaderElectionParticipant = false
                 }
 
-                pv.energyCommunity = newEnergyCommunity
+                if (pv.energyCommunity != ENERGYCOMMUNITY.NONE) {
+                    context.log.write(`start pv ${pv.id} for energy community ${pv.energyCommunity}`)
+                    
+                    if (storageEntry.numberOfMembers.get(pv.energyCommunity) == 0) {
+                        pv.leaderElectionParticipant = true
+                        startNode(pv, true)
+                    } else if (storageEntry.numberOfMembers.get(pv.energyCommunity)! < 3) {
+                        pv.leaderElectionParticipant = true
+                        startNode(pv, false)
+                    } else {
+                        startNode(pv, false)
+                    }
+
+                    const newNumberOfMembers = storageEntry.numberOfMembers.get(pv.energyCommunity)! + 1
+                    storageEntry.numberOfMembers.set(pv.energyCommunity, newNumberOfMembers)
+                }
             }
 
-            if (newEnergyCommunity != ENERGYCOMMUNITY.NONE) {
+            if (pv.energyCommunity != ENERGYCOMMUNITY.NONE) {
                 const production = dynamicsById[pv.productionDynamic]
                 mqttConnector.publishPVProduction(pv.id, production[0] + production[1] + production[2])
             }
@@ -250,21 +283,19 @@ const m = new BifrostZeroModule({
 })
 m.start()
 
-process.on('SIGINT', function() {
-    console.log("Shutting down");
+process.on('SIGINT', function () {
+    console.log("Shutting down and stopping docker containers. Please wait...");
 
     for (const storageEntry of localStorage.values()) {
         for (const charger of storageEntry.chargers) {
             if (charger.energyCommunity != ENERGYCOMMUNITY.NONE) {
-                child.execSync(`docker stop ${charger.id}`)
-                child.execSync(`docker rm ${charger.id}`)
+                stopNode(charger.id)
             }
         }
 
         for (const pv of storageEntry.pvs) {
             if (pv.energyCommunity != ENERGYCOMMUNITY.NONE) {
-                child.execSync(`docker stop ${pv.id}`)
-                child.execSync(`docker rm ${pv.id}`)
+                stopNode(pv.id)
             }
         }
     }
@@ -272,3 +303,22 @@ process.on('SIGINT', function() {
     mqttConnector.disconnect()
     process.exit()
 });
+
+function startNode(node:Node, boostrapNode:boolean) {
+    let childArguments: string[] = ["run", "-d", "--name", node.id, node.dockerImage,
+        "-url", "tcp://host.docker.internal:1883", "-id", node.id, "-energyCommunityId", node.energyCommunity]
+
+    if (boostrapNode) {
+        childArguments.push("-l")
+        childArguments.push("-b")
+    } else if (node.leaderElectionParticipant) {
+        childArguments.push("-l")
+    }
+
+    child.spawn("docker", childArguments)
+}
+
+function stopNode(id: string) {
+    child.execSync(`docker stop ${id}`)
+    child.execSync(`docker rm ${id}`)
+}
