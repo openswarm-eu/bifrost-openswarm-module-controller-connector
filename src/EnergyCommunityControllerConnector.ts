@@ -38,6 +38,20 @@ const logic = {
     initFn: (storyId: string, experimentId: string, state: TState, context: TModuleContext) => {
         context.log.write(`Init from [${storyId}/${experimentId}]`)
 
+        if (localStorage.has(experimentId)) {
+            const storageEntry = localStorage.get(experimentId)
+
+            storageEntry!.chargers.filter(ch => ch.energyCommunity != "None").forEach(ch => {
+                child.execSync(`docker stop ${ch.id}`)
+                child.execSync(`docker rm ${ch.id}`)
+            });
+
+            storageEntry!.pvs.filter(pv => pv.energyCommunity != "None").forEach(pv => {
+                child.execSync(`docker stop ${pv.id}`)
+                child.execSync(`docker rm ${pv.id}`)
+            });
+        }
+
         let storageEntry = {
             chargers: [] as Charger[],
             pvs: [] as PV[],
@@ -47,7 +61,7 @@ const logic = {
         storageEntry.numberOfMembers.set("A", 0)
         storageEntry.numberOfMembers.set("B", 0)
 
-        localStorage[experimentId] = storageEntry
+        localStorage.set(experimentId, storageEntry)
 
         for (const elementId of state.structures.ids) {
             if (state.structures.entities[elementId].experimentId == experimentId) {
@@ -108,7 +122,11 @@ const logic = {
         const result: DataFrame = new DataFrame()
         result.setTime(simulationAt)
 
-        const storageEntry = localStorage[experimentId]
+        const storageEntry = localStorage.get(experimentId)
+        if (storageEntry === undefined) {
+            context.log.write("Got unknown experimentId. This should not happen!")
+            return result
+        }
 
         for (const charger of storageEntry.chargers) {
             const newEnergyCommunity = dynamicsById[charger.energyCommunityDynamic]
