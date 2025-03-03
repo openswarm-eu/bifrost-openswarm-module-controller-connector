@@ -17,7 +17,12 @@ export class MQTTConnector {
     callbacks = new Map<string, Callback>() 
 
     connect(url: string) {
+        console.log(`connecting to MQTT broker ${url}`)
         this.client = mqtt.connect(url);
+
+        this.client.on("connect", () => {
+            console.log("connected to MQTT broker")
+        });
 
         this.client.on("message", (topic, message) => {
             const callback = this.callbacks.get(topic)

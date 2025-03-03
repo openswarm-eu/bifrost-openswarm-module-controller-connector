@@ -5,13 +5,12 @@
     "type": "module",
     "scripts": {
         "prestart": "npm run tsc",
-        "start": "node ./build/EnergyCommunityControllerConnector.js",
-        "start:docker": "npm run tsc && cross-env MODULE_URL=http://host.docker.internal:1809 node ./build/EnergyCommunityControllerConnector.js",
-        "module": "node ./build/EnergyCommunityControllerConnector.js",
+        "start": "node ./build/energyCommunityControllerConnector.js",
+        "start:docker": "npm run tsc && cross-env MODULE_URL=http://host.docker.internal:1809 node ./build/energyCommunityControllerConnector.js",
         "tsc": "tsc -p tsconfig.json",
         "test": "echo \"Error: no test specified\" && exit 1",
         "debug": "tsx ./src/EnergyCommunityControllerConnector.ts",
-        "debug:docker": "cross-env MODULE_URL=http://host.docker.internal:1809 tsx ./src/EnergyCommunityControllerConnector.ts"
+        "debug:docker": "cross-env MODULE_URL=http://host.docker.internal:1809 tsx ./src/energyCommunityControllerConnector.ts"
     },
     "main": "./build/EnergyCommunityControllerConnector.js",
     "author": "anonymous",

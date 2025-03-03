@@ -1,31 +1,75 @@
-name: moduletemplate_dockerfile
+name: energy-community
 services:
+    mqtt-broker: 
+        image: emqx/emqx
+        ports:
+            - 1883:1883
+
     influxdb:
         image: influxdb:2.7.5-alpine
         environment:
             DOCKER_INFLUXDB_INIT_MODE: 'setup'
-            DOCKER_INFLUXDB_INIT_USERNAME: 'howto_user'
-            DOCKER_INFLUXDB_INIT_PASSWORD: 'howto_str0ng_passw0rd'
-            DOCKER_INFLUXDB_INIT_ORG: 'howto_company'
-            DOCKER_INFLUXDB_INIT_BUCKET: 'howto_company'
-            DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: 'C8TXsDAjcGfCKqZJY6fI+u268gUMdRWhj6MpbZexj38='
-
+            DOCKER_INFLUXDB_INIT_USERNAME: 'admin'
+            DOCKER_INFLUXDB_INIT_PASSWORD: '~*@Zq?>vUQa_3RyW'
+            DOCKER_INFLUXDB_INIT_ORG: 'siemens'
+            DOCKER_INFLUXDB_INIT_BUCKET: 'siemens'
+            DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: '1d478854045f485ac83e0c39a04c0edae20ea94295c222850f1b64dfd1161b65'
+  
     bifrost-core:
-        image: cr.siemens.com/bifrost/bifrost-zero:latest
+        image: cr.siemens.com/bifrost/bifrost-zero:rc-v1.3
         environment:
-            BIFROST__server_host: '"::"'
             BIFROST__cdl_url: '"http://influxdb:8086"'
-            BIFROST__cdl_org: '"howto_company"'
-            BIFROST__cdl_user: '"howto_user"'
-            BIFROST__cdl_token: '"C8TXsDAjcGfCKqZJY6fI+u268gUMdRWhj6MpbZexj38="'
+            BIFROST__cdl_startupAttempts: 20
+            BIFROST__server_host: '"::"'
+            BIFROST__simulation_replaySpeedMap_SLOW: 6
+            BIFROST__simulation_replaySpeedMap_NORMAL: 3
+            BIFROST__simulation_replaySpeedMap_FAST: 1
+        depends_on:
+            - influxdb  
         ports:
-            - '9091:9091'
-    
-    moduletemplate:
+            - 9091:9091
+
+    fenrir:
+        image: cr.siemens.com/bifrost/bifrost-fenrir:zero-v1.3.0
+        environment:
+            MODULE_URL: "http://fenrir:7001"
+            BIFROST_URL: "http://bifrost-core:9091"
+            SAMPLING_RATE: 900
+        depends_on:
+            - bifrost-core
+
+    weather-model:
+        image: cr.siemens.com/bifrost/bifrost-swg:zero-v2.0.0
+        environment:
+            MODULE_URL: "http://weather-model:7075"
+            BIFROST_URL: "http://bifrost-core:9091"
+            SAMPLING_RATE: 900
+        depends_on:
+            - bifrost-core
+ 
+    prosumer-model:
+        image: cr.siemens.com/bifrost/bifrost-prosumermodel:zero-v3.0.0
+        environment:
+            MODULE_URL: "http://prosumer-model:7074"
+            BIFROST_URL: "http://bifrost-core:9091"
+            SAMPLING_RATE: 900
+            EV_CLASS_ACTIVE: false
+            BAT_OPT_CLASS: false
+        depends_on:
+            - bifrost-core
+
+    energy-community-controller-connector:
         build:
             context: ../
-            dockerfile: ./docker/Dockerfile-module
-        image: moduletemplate:latest
+            dockerfile: ./docker/Dockerfile
+        image: energy-community-controller-connector:latest
         environment:
             BIFROST_URL: 'http://bifrost-core:9091'
-            MODULE_URL: 'http://moduletemplate:1809'
+            MODULE_URL: 'http://energy-community-controller-connector:1809'
+            MQTT_URL: 'mqtt://mqtt-broker'
+        privileged: true
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+        depends_on:
+            - bifrost-core
+            - mqtt-broker

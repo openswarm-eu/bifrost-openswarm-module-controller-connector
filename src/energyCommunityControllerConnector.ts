@@ -37,7 +37,7 @@ const logic = {
 }
 
 let mqttConnector = new MQTTConnector()
-mqttConnector.connect("mqtt://localhost")
+mqttConnector.connect(process.env.MQTT_URL || 'mqtt://localhost')
 
 const m = new BifrostZeroModule({
     author: 'anonymous',
