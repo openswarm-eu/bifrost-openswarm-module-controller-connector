@@ -1,6 +1,6 @@
 {
     "extends": "@tsconfig/node16/tsconfig.json",
-    "files" :["src/EnergyCommunityControllerConnector.ts"],
+    "files" :["src/energyCommunityControllerConnector.ts"],
      "compilerOptions": {
         "outDir": "./build",
         "noImplicitAny": false,
