@@ -60,7 +60,7 @@ export function processUpdate(experimentId: string, simulationAt: number, data: 
                 if (storageEntry.numberOfMembers.get(charger.energyCommunity) == 0) {
                     charger.leaderElectionParticipant = true
                     startNode(charger, true)
-                } else if (storageEntry.numberOfMembers.get(charger.energyCommunity)! < 3) {
+                } else if (storageEntry.numberOfMembers.get(charger.energyCommunity)! < 5) {
                     charger.leaderElectionParticipant = true
                     startNode(charger, false)
                 } else {
@@ -116,7 +116,7 @@ export function processUpdate(experimentId: string, simulationAt: number, data: 
                 if (storageEntry.numberOfMembers.get(pv.energyCommunity) == 0) {
                     pv.leaderElectionParticipant = true
                     startNode(pv, true)
-                } else if (storageEntry.numberOfMembers.get(pv.energyCommunity)! < 3) {
+                } else if (storageEntry.numberOfMembers.get(pv.energyCommunity)! < 5) {
                     pv.leaderElectionParticipant = true
                     startNode(pv, false)
                 } else {
