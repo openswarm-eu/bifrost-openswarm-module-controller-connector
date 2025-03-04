@@ -23,8 +23,16 @@ export function processInit(experimentId: string, localStorage: Map<string, Stor
     localStorage.set(experimentId, storageEntry)
 
     for (const elementId of state.structures.ids) {
-        if (state.structures.entities[elementId].experimentId == experimentId) {
-            if (state.structures.entities[elementId].typeId == TYPEID.CHARGING_POLE) {
+        if (state.structures.entities[elementId].experimentId != experimentId) {
+            continue
+        }    
+
+        if (state.structures.entities[elementId].typeId != TYPEID.POWERGRID_CONNECTOR) {
+            continue
+        }
+
+        for (const childId of state.structures.entities[elementId].childIds) {
+            if (state.structures.entities[childId].typeId == TYPEID.CHARGING_POLE) {
                 const charger: Charger = {
                     id: v4(),
                     energyCommunity: ENERGYCOMMUNITY.NONE,
@@ -37,26 +45,21 @@ export function processInit(experimentId: string, localStorage: Map<string, Stor
                 }
                 storageEntry.chargers.push(charger)
 
-                for (const dynamicID of state.structures.entities[elementId].dynamicIds) {
-                    switch (state.dynamics.entities[dynamicID].typeId) {
-                        case TYPEID.ENERGY_COMMUNITY:
-                            charger.energyCommunityDynamic = dynamicID
-                            break
-                        case TYPEID.CHGSTATION_POWER:
-                            charger.chargingSetPointDynamic = dynamicID
-                            break
+                for (const dynamicID of state.structures.entities[childId].dynamicIds) {
+                    if (state.dynamics.entities[dynamicID].typeId == TYPEID.CHGSTATION_POWER) {
+                        charger.chargingSetPointDynamic = dynamicID
+                        break
                     }
                 }
 
-                const parentId = state.structures.entities[elementId].parentIds[0]
-                for (const dynamicID of state.structures.entities[parentId].dynamicIds) {
+                for (const dynamicID of state.structures.entities[elementId].dynamicIds) {
                     if (state.dynamics.entities[dynamicID].typeId == TYPEID.ACTIVE_POWER_3P) {
                         charger.activePowerDynamic = dynamicID
+                    } else if (state.dynamics.entities[dynamicID].typeId == TYPEID.ENERGY_COMMUNITY) {
+                        charger.energyCommunityDynamic = dynamicID
                     }
                 }
-            }
-
-            if (state.structures.entities[elementId].typeId == TYPEID.SOLAR_PANEL) {
+            } else if (state.structures.entities[childId].typeId == TYPEID.SOLAR_PANEL) {
                 const pv: PV = { 
                     id: v4(),
                     energyCommunity: ENERGYCOMMUNITY.NONE,
@@ -66,14 +69,17 @@ export function processInit(experimentId: string, localStorage: Map<string, Stor
                     productionDynamic: "" }
                 storageEntry.pvs.push(pv)
 
+                for (const dynamicID of state.structures.entities[childId].dynamicIds) {
+                    if (state.dynamics.entities[dynamicID].typeId == TYPEID.ACTIVE_POWER_3P) {
+                         pv.productionDynamic = dynamicID
+                        break
+                    }
+                }
+
                 for (const dynamicID of state.structures.entities[elementId].dynamicIds) {
-                    switch (state.dynamics.entities[dynamicID].typeId) {
-                        case TYPEID.ENERGY_COMMUNITY:
-                            pv.energyCommunityDynamic = dynamicID
-                            break
-                        case TYPEID.ACTIVE_POWER_3P:
-                            pv.productionDynamic = dynamicID
-                            break
+                    if (state.dynamics.entities[dynamicID].typeId == TYPEID.ENERGY_COMMUNITY) {
+                        pv.energyCommunityDynamic = dynamicID
+                        break
                     }
                 }
             }

@@ -21,6 +21,7 @@ dynamics:
         - None
         - A
         - B
+        - C
     tags:
       - energyCommunityController
 
@@ -43,7 +44,6 @@ dynamics:
 
 mappings:
   ENERGY-COMMUNITY:
-    - CHARGING-POLE
-    - SOLAR-PANEL
+    - POWERGRID-CONNECTOR
   CHGSTATION-POWER:
     - CHARGING-POLE
