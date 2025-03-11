@@ -21,6 +21,7 @@ services:
             BIFROST__cdl_url: '"http://influxdb:8086"'
             BIFROST__cdl_startupAttempts: 20
             BIFROST__server_host: '"::"'
+            BIFROST__simulation_replayDurationTarget: 5
             BIFROST__simulation_replaySpeedMap_SLOW: 6
             BIFROST__simulation_replaySpeedMap_NORMAL: 3
             BIFROST__simulation_replaySpeedMap_FAST: 1
