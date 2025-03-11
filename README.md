@@ -36,3 +36,9 @@ docker-compose -f ./docker/docker-compose.yml up -d --build
 ```
 
 The BIFROST ui is reachable under [http://localhost:9091](http://localhost:9091)
+
+## Test Story
+
+A simple test story is also provided here, just zip the contents of the [`./demo/bsx_raw/OpenSwarmCity/`](./demo/bsx_raw/OpenSwarmCity/) folder and import this archive via the "Import Story" button on the start screen of the BIFROST ui. 
+
+You can also use the contents of the files in the [`./demo/base-stories/`](./demo/base-stories/) to create only the structures in your experiment. Use CTRL+A, CTRL+C to copy the contents of the file to the clipboard and paste it into an empty experiment in BIFROST.

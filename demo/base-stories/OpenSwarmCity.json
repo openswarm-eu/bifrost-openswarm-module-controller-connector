@@ -1,0 +1,446 @@
+[
+    {
+        "ids": [
+            "TRAFO-BUILDING::[-2|-1]@EXPERIMENT::IsTj77xp",
+            "LV-TRANSFORMER::[-2|-1]>CwESNvhM@EXPERIMENT::IsTj77xp"
+        ],
+        "operationId": "newStructure",
+        "params": {
+            "storyId": "STORY::GMKLuKLe",
+            "experimentId": "EXPERIMENT::IsTj77xp",
+            "typeIds": [
+                "TRAFO-BUILDING",
+                "LV-TRANSFORMER"
+            ],
+            "extraParameters": {
+                "flavor": "25_SBC_transformer",
+                "rotation": 0
+            },
+            "position": [
+                "-2|-1"
+            ]
+        }
+    },
+    {
+        "ids": [
+            "RESIDENTIAL-SINGLE::[0|-5,0|-4,1|-5,1|-4]@EXPERIMENT::IsTj77xp",
+            "POWERGRID-CONNECTOR::[0|-5,0|-4,1|-5,1|-4]>AqGZlJwu@EXPERIMENT::IsTj77xp",
+            "SOLAR-PANEL::[0|-5,0|-4,1|-5,1|-4]>vfSg7gvJ@EXPERIMENT::IsTj77xp"
+        ],
+        "operationId": "newStructure",
+        "params": {
+            "storyId": "STORY::GMKLuKLe",
+            "experimentId": "EXPERIMENT::IsTj77xp",
+            "typeIds": [
+                "RESIDENTIAL-SINGLE",
+                "POWERGRID-CONNECTOR",
+                "SOLAR-PANEL"
+            ],
+            "extraParameters": {
+                "flavor": "10_SBC_residentialsingle",
+                "rotation": 0
+            },
+            "position": [
+                "0|-5",
+                "0|-4",
+                "1|-5",
+                "1|-4"
+            ]
+        }
+    },
+    {
+        "ids": [
+            "RESIDENTIAL-SINGLE::[4|-5,4|-4,5|-5,5|-4]@EXPERIMENT::IsTj77xp",
+            "POWERGRID-CONNECTOR::[4|-5,4|-4,5|-5,5|-4]>CRbI7eMk@EXPERIMENT::IsTj77xp",
+            "SOLAR-PANEL::[4|-5,4|-4,5|-5,5|-4]>EpXvGdiO@EXPERIMENT::IsTj77xp"
+        ],
+        "operationId": "newStructure",
+        "params": {
+            "storyId": "STORY::GMKLuKLe",
+            "experimentId": "EXPERIMENT::IsTj77xp",
+            "typeIds": [
+                "RESIDENTIAL-SINGLE",
+                "POWERGRID-CONNECTOR",
+                "SOLAR-PANEL"
+            ],
+            "extraParameters": {
+                "flavor": "10_SBC_residentialsingle",
+                "rotation": 0
+            },
+            "position": [
+                "4|-5",
+                "4|-4",
+                "5|-5",
+                "5|-4"
+            ]
+        }
+    },
+    {
+        "ids": [
+            "RESIDENTIAL-SINGLE::[8|-5,8|-4,9|-5,9|-4]@EXPERIMENT::IsTj77xp",
+            "POWERGRID-CONNECTOR::[8|-5,8|-4,9|-5,9|-4]>uZO9QKZs@EXPERIMENT::IsTj77xp",
+            "SOLAR-PANEL::[8|-5,8|-4,9|-5,9|-4]>ptdPpDJy@EXPERIMENT::IsTj77xp"
+        ],
+        "operationId": "newStructure",
+        "params": {
+            "storyId": "STORY::GMKLuKLe",
+            "experimentId": "EXPERIMENT::IsTj77xp",
+            "typeIds": [
+                "RESIDENTIAL-SINGLE",
+                "POWERGRID-CONNECTOR",
+                "SOLAR-PANEL"
+            ],
+            "extraParameters": {
+                "flavor": "10_SBC_residentialsingle",
+                "rotation": 0
+            },
+            "position": [
+                "8|-5",
+                "8|-4",
+                "9|-5",
+                "9|-4"
+            ]
+        }
+    },
+    {
+        "ids": [
+            "RESIDENTIAL-SINGLE::[12|-5,12|-4,13|-5,13|-4]@EXPERIMENT::IsTj77xp",
+            "POWERGRID-CONNECTOR::[12|-5,12|-4,13|-5,13|-4]>uA4fvUST@EXPERIMENT::IsTj77xp",
+            "SOLAR-PANEL::[12|-5,12|-4,13|-5,13|-4]>DPcOS2bR@EXPERIMENT::IsTj77xp"
+        ],
+        "operationId": "newStructure",
+        "params": {
+            "storyId": "STORY::GMKLuKLe",
+            "experimentId": "EXPERIMENT::IsTj77xp",
+            "typeIds": [
+                "RESIDENTIAL-SINGLE",
+                "POWERGRID-CONNECTOR",
+                "SOLAR-PANEL"
+            ],
+            "extraParameters": {
+                "flavor": "10_SBC_residentialsingle",
+                "rotation": 0
+            },
+            "position": [
+                "12|-5",
+                "12|-4",
+                "13|-5",
+                "13|-4"
+            ]
+        }
+    },
+    {
+        "ids": [
+            "RESIDENTIAL-SINGLE::[0|3,0|4,1|3,1|4]@EXPERIMENT::IsTj77xp",
+            "POWERGRID-CONNECTOR::[0|3,0|4,1|3,1|4]>BoEtuBn5@EXPERIMENT::IsTj77xp",
+            "CHARGING-POLE::[0|3,0|4,1|3,1|4]>9cwCTFDC@EXPERIMENT::IsTj77xp"
+        ],
+        "operationId": "newStructure",
+        "params": {
+            "storyId": "STORY::GMKLuKLe",
+            "experimentId": "EXPERIMENT::IsTj77xp",
+            "typeIds": [
+                "RESIDENTIAL-SINGLE",
+                "POWERGRID-CONNECTOR",
+                "CHARGING-POLE"
+            ],
+            "extraParameters": {
+                "flavor": "12_SBC_residentialsingle",
+                "rotation": 0
+            },
+            "position": [
+                "0|3",
+                "0|4",
+                "1|3",
+                "1|4"
+            ]
+        }
+    },
+    {
+        "ids": [
+            "RESIDENTIAL-SINGLE::[4|3,4|4,5|3,5|4]@EXPERIMENT::IsTj77xp",
+            "POWERGRID-CONNECTOR::[4|3,4|4,5|3,5|4]>OGH5y7fV@EXPERIMENT::IsTj77xp",
+            "CHARGING-POLE::[4|3,4|4,5|3,5|4]>PFpJbjmN@EXPERIMENT::IsTj77xp"
+        ],
+        "operationId": "newStructure",
+        "params": {
+            "storyId": "STORY::GMKLuKLe",
+            "experimentId": "EXPERIMENT::IsTj77xp",
+            "typeIds": [
+                "RESIDENTIAL-SINGLE",
+                "POWERGRID-CONNECTOR",
+                "CHARGING-POLE"
+            ],
+            "extraParameters": {
+                "flavor": "12_SBC_residentialsingle",
+                "rotation": 0
+            },
+            "position": [
+                "4|3",
+                "4|4",
+                "5|3",
+                "5|4"
+            ]
+        }
+    },
+    {
+        "ids": [
+            "RESIDENTIAL-SINGLE::[8|3,8|4,9|3,9|4]@EXPERIMENT::IsTj77xp",
+            "POWERGRID-CONNECTOR::[8|3,8|4,9|3,9|4]>nQ2tX8rR@EXPERIMENT::IsTj77xp",
+            "CHARGING-POLE::[8|3,8|4,9|3,9|4]>DIFEdqi8@EXPERIMENT::IsTj77xp"
+        ],
+        "operationId": "newStructure",
+        "params": {
+            "storyId": "STORY::GMKLuKLe",
+            "experimentId": "EXPERIMENT::IsTj77xp",
+            "typeIds": [
+                "RESIDENTIAL-SINGLE",
+                "POWERGRID-CONNECTOR",
+                "CHARGING-POLE"
+            ],
+            "extraParameters": {
+                "flavor": "12_SBC_residentialsingle",
+                "rotation": 0
+            },
+            "position": [
+                "8|3",
+                "8|4",
+                "9|3",
+                "9|4"
+            ]
+        }
+    },
+    {
+        "ids": [
+            "CABLE-UNDERGROUND-SD::[8|-1,8|-4]@EXPERIMENT::IsTj77xp"
+        ],
+        "operationId": "newConnection",
+        "params": {
+            "storyId": "STORY::GMKLuKLe",
+            "experimentId": "EXPERIMENT::IsTj77xp",
+            "typeId": "CABLE-UNDERGROUND-SD",
+            "vertexes": [
+                "8|-1",
+                "8|-4"
+            ]
+        }
+    },
+    {
+        "ids": [
+            "CABLE-UNDERGROUND-SD::[8|-1,8|3]@EXPERIMENT::IsTj77xp"
+        ],
+        "operationId": "newConnection",
+        "params": {
+            "storyId": "STORY::GMKLuKLe",
+            "experimentId": "EXPERIMENT::IsTj77xp",
+            "typeId": "CABLE-UNDERGROUND-SD",
+            "vertexes": [
+                "8|-1",
+                "8|3"
+            ]
+        }
+    },
+    {
+        "ids": [
+            "CABLE-UNDERGROUND-SD::[4|-4,4|-1]@EXPERIMENT::IsTj77xp"
+        ],
+        "operationId": "newConnection",
+        "params": {
+            "storyId": "STORY::GMKLuKLe",
+            "experimentId": "EXPERIMENT::IsTj77xp",
+            "typeId": "CABLE-UNDERGROUND-SD",
+            "vertexes": [
+                "4|-4",
+                "4|-1"
+            ]
+        }
+    },
+    {
+        "ids": [
+            "CABLE-UNDERGROUND-SD::[4|-1,4|3]@EXPERIMENT::IsTj77xp"
+        ],
+        "operationId": "newConnection",
+        "params": {
+            "storyId": "STORY::GMKLuKLe",
+            "experimentId": "EXPERIMENT::IsTj77xp",
+            "typeId": "CABLE-UNDERGROUND-SD",
+            "vertexes": [
+                "4|-1",
+                "4|3"
+            ]
+        }
+    },
+    {
+        "ids": [
+            "CABLE-UNDERGROUND-SD::[-2|-1,0|-1]@EXPERIMENT::IsTj77xp"
+        ],
+        "operationId": "newConnection",
+        "params": {
+            "storyId": "STORY::GMKLuKLe",
+            "experimentId": "EXPERIMENT::IsTj77xp",
+            "typeId": "CABLE-UNDERGROUND-SD",
+            "vertexes": [
+                "-2|-1",
+                "0|-1"
+            ],
+            "noBisectionCheck": true
+        }
+    },
+    {
+        "ids": [
+            "CABLE-UNDERGROUND-SD::[0|-1,0|-4]@EXPERIMENT::IsTj77xp"
+        ],
+        "operationId": "newConnection",
+        "params": {
+            "storyId": "STORY::GMKLuKLe",
+            "experimentId": "EXPERIMENT::IsTj77xp",
+            "typeId": "CABLE-UNDERGROUND-SD",
+            "vertexes": [
+                "0|-1",
+                "0|-4"
+            ]
+        }
+    },
+    {
+        "ids": [
+            "CABLE-UNDERGROUND-SD::[0|-1,0|3]@EXPERIMENT::IsTj77xp"
+        ],
+        "operationId": "newConnection",
+        "params": {
+            "storyId": "STORY::GMKLuKLe",
+            "experimentId": "EXPERIMENT::IsTj77xp",
+            "typeId": "CABLE-UNDERGROUND-SD",
+            "vertexes": [
+                "0|-1",
+                "0|3"
+            ]
+        }
+    },
+    {
+        "ids": [
+            "WIDGET::qb7tTglA@EXPERIMENT::IsTj77xp"
+        ],
+        "operationId": "newWidgets",
+        "params": {
+            "storyId": "STORY::GMKLuKLe",
+            "experimentId": "EXPERIMENT::IsTj77xp",
+            "dynamicIds": [
+                "ENERGY-COMMUNITY->POWERGRID-CONNECTOR::[0|-5,0|-4,1|-5,1|-4]>AqGZlJwu@EXPERIMENT::IsTj77xp"
+            ],
+            "structureIds": [
+                "POWERGRID-CONNECTOR::[0|-5,0|-4,1|-5,1|-4]>AqGZlJwu@EXPERIMENT::IsTj77xp"
+            ]
+        }
+    },
+    {
+        "ids": [
+            "WIDGET::scAC4CP5@EXPERIMENT::IsTj77xp"
+        ],
+        "operationId": "newWidgets",
+        "params": {
+            "storyId": "STORY::GMKLuKLe",
+            "experimentId": "EXPERIMENT::IsTj77xp",
+            "dynamicIds": [
+                "ENERGY-COMMUNITY->POWERGRID-CONNECTOR::[4|-5,4|-4,5|-5,5|-4]>CRbI7eMk@EXPERIMENT::IsTj77xp"
+            ],
+            "structureIds": [
+                "POWERGRID-CONNECTOR::[4|-5,4|-4,5|-5,5|-4]>CRbI7eMk@EXPERIMENT::IsTj77xp"
+            ]
+        }
+    },
+    {
+        "ids": [
+            "WIDGET::z5JwTFth@EXPERIMENT::IsTj77xp"
+        ],
+        "operationId": "newWidgets",
+        "params": {
+            "storyId": "STORY::GMKLuKLe",
+            "experimentId": "EXPERIMENT::IsTj77xp",
+            "dynamicIds": [
+                "ENERGY-COMMUNITY->POWERGRID-CONNECTOR::[8|-5,8|-4,9|-5,9|-4]>uZO9QKZs@EXPERIMENT::IsTj77xp"
+            ],
+            "structureIds": [
+                "POWERGRID-CONNECTOR::[8|-5,8|-4,9|-5,9|-4]>uZO9QKZs@EXPERIMENT::IsTj77xp"
+            ]
+        }
+    },
+    {
+        "ids": [
+            "WIDGET::8v4i6YtT@EXPERIMENT::IsTj77xp"
+        ],
+        "operationId": "newWidgets",
+        "params": {
+            "storyId": "STORY::GMKLuKLe",
+            "experimentId": "EXPERIMENT::IsTj77xp",
+            "dynamicIds": [
+                "ENERGY-COMMUNITY->POWERGRID-CONNECTOR::[12|-5,12|-4,13|-5,13|-4]>uA4fvUST@EXPERIMENT::IsTj77xp"
+            ],
+            "structureIds": [
+                "POWERGRID-CONNECTOR::[12|-5,12|-4,13|-5,13|-4]>uA4fvUST@EXPERIMENT::IsTj77xp"
+            ]
+        }
+    },
+    {
+        "ids": [
+            "WIDGET::YWSROMpw@EXPERIMENT::IsTj77xp"
+        ],
+        "operationId": "newWidgets",
+        "params": {
+            "storyId": "STORY::GMKLuKLe",
+            "experimentId": "EXPERIMENT::IsTj77xp",
+            "dynamicIds": [
+                "ENERGY-COMMUNITY->POWERGRID-CONNECTOR::[0|3,0|4,1|3,1|4]>BoEtuBn5@EXPERIMENT::IsTj77xp"
+            ],
+            "structureIds": [
+                "POWERGRID-CONNECTOR::[0|3,0|4,1|3,1|4]>BoEtuBn5@EXPERIMENT::IsTj77xp"
+            ]
+        }
+    },
+    {
+        "ids": [
+            "WIDGET::TDgAGG5a@EXPERIMENT::IsTj77xp"
+        ],
+        "operationId": "newWidgets",
+        "params": {
+            "storyId": "STORY::GMKLuKLe",
+            "experimentId": "EXPERIMENT::IsTj77xp",
+            "dynamicIds": [
+                "ENERGY-COMMUNITY->POWERGRID-CONNECTOR::[4|3,4|4,5|3,5|4]>OGH5y7fV@EXPERIMENT::IsTj77xp"
+            ],
+            "structureIds": [
+                "POWERGRID-CONNECTOR::[4|3,4|4,5|3,5|4]>OGH5y7fV@EXPERIMENT::IsTj77xp"
+            ]
+        }
+    },
+    {
+        "ids": [
+            "WIDGET::rFqLERwH@EXPERIMENT::IsTj77xp"
+        ],
+        "operationId": "newWidgets",
+        "params": {
+            "storyId": "STORY::GMKLuKLe",
+            "experimentId": "EXPERIMENT::IsTj77xp",
+            "dynamicIds": [
+                "ENERGY-COMMUNITY->POWERGRID-CONNECTOR::[8|3,8|4,9|3,9|4]>nQ2tX8rR@EXPERIMENT::IsTj77xp"
+            ],
+            "structureIds": [
+                "POWERGRID-CONNECTOR::[8|3,8|4,9|3,9|4]>nQ2tX8rR@EXPERIMENT::IsTj77xp"
+            ]
+        }
+    },
+    {
+        "ids": [
+            "CABLE-UNDERGROUND-SD::[12|-1,12|-4]@EXPERIMENT::IsTj77xp"
+        ],
+        "operationId": "newConnection",
+        "params": {
+            "storyId": "STORY::GMKLuKLe",
+            "experimentId": "EXPERIMENT::IsTj77xp",
+            "typeId": "CABLE-UNDERGROUND-SD",
+            "vertexes": [
+                "12|-1",
+                "12|-4"
+            ]
+        }
+    }
+]
