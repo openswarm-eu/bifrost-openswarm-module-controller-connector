@@ -10,7 +10,8 @@ export const TYPEID = {
 export const ENERGYCOMMUNITY = {
     NONE: "None",
     A: "A",
-    B: "B"
+    B: "B",
+    C: "C"
 }
 
 export interface Node {

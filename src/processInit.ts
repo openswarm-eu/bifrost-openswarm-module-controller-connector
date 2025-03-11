@@ -17,8 +17,9 @@ export function processInit(experimentId: string, localStorage: Map<string, Stor
         numberOfMembers: new Map()
     }
 
-    storageEntry.numberOfMembers.set(ENERGYCOMMUNITY.A, 0)
-    storageEntry.numberOfMembers.set(ENERGYCOMMUNITY.B, 0)
+    Object.values(ENERGYCOMMUNITY).forEach(community => {
+        storageEntry.numberOfMembers.set(community, 0)
+    });
 
     localStorage.set(experimentId, storageEntry)
 
