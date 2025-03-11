@@ -20,7 +20,7 @@ npm install
 
 3. Start BIFROST ZERO.
 ```sh
-docker-compose -f ./docker/docker-compose_bifrost_dev.yml up -d
+docker-compose -f ./docker/docker-compose_dev.yml up -d
 ```
 
 4. Run the module
