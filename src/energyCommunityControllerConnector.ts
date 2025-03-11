@@ -15,7 +15,12 @@ const logic = {
         try {   
             processInit(experimentId, localStorage, state)
         } catch (error) {
-            context.log.write(`Error: ${error}`, Log.level.ERROR)
+            if (error instanceof Error) {
+                context.log.write(`Error: ${error.message}`, Log.level.ERROR)
+                context.log.write(`Stack: ${error.stack}`, Log.level.ERROR)
+            } else {
+                context.log.write(`Unexpected error: ${error}`, Log.level.ERROR)
+            }
         }
 
 
@@ -27,7 +32,12 @@ const logic = {
         try {   
             return processUpdate(experimentId, simulationAt, data, context, localStorage, mqttConnector)
         } catch (error) {
-            context.log.write(`Error: ${error}`, Log.level.ERROR)
+            if (error instanceof Error) {
+                context.log.write(`Error: ${error.message}`, Log.level.ERROR)
+                context.log.write(`Stack: ${error.stack}`, Log.level.ERROR)
+            } else {
+                context.log.write(`Unexpected error: ${error}`, Log.level.ERROR)
+            }
         }
 
         const result: DataFrame = new DataFrame()
