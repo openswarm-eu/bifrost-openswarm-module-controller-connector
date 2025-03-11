@@ -32,7 +32,7 @@ export function processInit(experimentId: string, localStorage: Map<string, Stor
         }
 
         for (const childId of state.structures.entities[elementId].childIds) {
-            if (state.structures.entities[childId].typeId == TYPEID.CHARGING_POLE) {
+            if (state.structures.entities[childId]?.typeId == TYPEID.CHARGING_POLE) {
                 const charger: Charger = {
                     id: v4(),
                     energyCommunity: ENERGYCOMMUNITY.NONE,
@@ -59,7 +59,7 @@ export function processInit(experimentId: string, localStorage: Map<string, Stor
                         charger.energyCommunityDynamic = dynamicID
                     }
                 }
-            } else if (state.structures.entities[childId].typeId == TYPEID.SOLAR_PANEL) {
+            } else if (state.structures.entities[childId]?.typeId == TYPEID.SOLAR_PANEL) {
                 const pv: PV = { 
                     id: v4(),
                     energyCommunity: ENERGYCOMMUNITY.NONE,
