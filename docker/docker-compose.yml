@@ -16,7 +16,7 @@ services:
             DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: '1d478854045f485ac83e0c39a04c0edae20ea94295c222850f1b64dfd1161b65'
   
     bifrost-core:
-        image: cr.siemens.com/bifrost/bifrost-zero:rc-v1.3
+        image: cr.siemens.com/bifrost/bifrost-zero:latest
         environment:
             BIFROST__cdl_url: '"http://influxdb:8086"'
             BIFROST__cdl_startupAttempts: 20
