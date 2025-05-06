@@ -41,7 +41,6 @@ export function processInit(experimentId: string, localStorage: Map<string, Stor
                     leaderElectionParticipant: false,
                     dockerImage: "cr.siemens.com/openswarm/energy-community-controller/charger",
                     chargingSetPointDynamic: "",
-                    activePowerDynamic: "",
                     chargingSetPoint: 0
                 }
                 storageEntry.chargers.push(charger)
@@ -54,9 +53,7 @@ export function processInit(experimentId: string, localStorage: Map<string, Stor
                 }
 
                 for (const dynamicID of state.structures.entities[elementId].dynamicIds) {
-                    if (state.dynamics.entities[dynamicID].typeId == TYPEID.ACTIVE_POWER_3P) {
-                        charger.activePowerDynamic = dynamicID
-                    } else if (state.dynamics.entities[dynamicID].typeId == TYPEID.ENERGY_COMMUNITY) {
+                    if (state.dynamics.entities[dynamicID].typeId == TYPEID.ENERGY_COMMUNITY) {
                         charger.energyCommunityDynamic = dynamicID
                     }
                 }
@@ -71,8 +68,8 @@ export function processInit(experimentId: string, localStorage: Map<string, Stor
                 storageEntry.pvs.push(pv)
 
                 for (const dynamicID of state.structures.entities[childId].dynamicIds) {
-                    if (state.dynamics.entities[dynamicID].typeId == TYPEID.ACTIVE_POWER_3P) {
-                         pv.productionDynamic = dynamicID
+                    if (state.dynamics.entities[dynamicID].typeId == TYPEID.PV_SYSTEM_POWER) {
+                        pv.productionDynamic = dynamicID
                         break
                     }
                 }

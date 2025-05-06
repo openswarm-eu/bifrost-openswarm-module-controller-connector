@@ -1,10 +1,11 @@
 export const TYPEID = {
-    ACTIVE_POWER_3P: "ACTIVE-POWER-3P",
-    CHARGING_POLE: "CHARGING-POLE",
-    CHGSTATION_POWER: "CHGSTATION-POWER",
-    ENERGY_COMMUNITY: "ENERGY-COMMUNITY",
-    POWERGRID_CONNECTOR: "POWERGRID-CONNECTOR", 
-    SOLAR_PANEL: "SOLAR-PANEL",
+    ACTIVE_POWER_3P     : "ACTIVE-POWER-3P",
+    CHARGING_POLE       : "CHARGING-POLE",
+    CHGSTATION_POWER    : "CHGSTATION-POWER",
+    SOLAR_PANEL         : "SOLAR-PANEL",
+    PV_SYSTEM_POWER     : "PV-SYSTEM-POWER",
+    ENERGY_COMMUNITY    : "ENERGY-COMMUNITY",
+    POWERGRID_CONNECTOR : "POWERGRID-CONNECTOR", 
 }
 
 export const ENERGYCOMMUNITY = {
@@ -16,7 +17,7 @@ export const ENERGYCOMMUNITY = {
 
 export interface Node {
     id: string
-    energyCommunity: typeof ENERGYCOMMUNITY.NONE | typeof ENERGYCOMMUNITY.A | typeof ENERGYCOMMUNITY.B
+    energyCommunity: typeof ENERGYCOMMUNITY.NONE | typeof ENERGYCOMMUNITY.A | typeof ENERGYCOMMUNITY.B | typeof ENERGYCOMMUNITY.C
     energyCommunityDynamic: string
     leaderElectionParticipant: boolean
     dockerImage: string
@@ -24,7 +25,6 @@ export interface Node {
 
 export interface Charger extends Node {
     chargingSetPointDynamic: string
-    activePowerDynamic: string
     chargingSetPoint: number
 }
 
@@ -36,4 +36,14 @@ export type StorageEntry = {
     chargers: Charger[]
     pvs: PV[]
     numberOfMembers: Map<string, number>
+}
+
+export const PV_SYSTEM_POWER_MAPPING = {
+    Infeed_Potential : 0,
+    Actual_Infeed    : 1,   
+}
+
+export const CHARGING_STATION_POWER_MAPPING = {
+    Power_Demand : 0,
+    Actual_Power : 1,
 }
