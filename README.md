@@ -85,4 +85,4 @@ There is a PowerShell script `releaseNewVersion.ps1` which does the above in one
 
 ## Current Version
 
-v0.0.0
+v0.9.0
