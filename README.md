@@ -11,7 +11,7 @@ stored locally or access to the docker repo.
 
 ## Compile and run your module 
 
-1. Install [Node.JS](https://nodejs.org/en) (tested with version 18.20.2, npm 10.5.0).
+1. Install [Node.JS](https://nodejs.org/en) (tested with version 20.19.1, npm 10.8.2).
 
 2. Install Node modules
 ```sh
