@@ -1,6 +1,11 @@
 import { DataFrame, TModuleContext } from 'bifrost-zero-common'
 import { MQTTConnector } from './mqttConnector.js'
-import { ENERGYCOMMUNITY, StorageEntry, TYPEID } from './types.js'
+import { 
+    CHARGING_STATION_POWER_MAPPING, 
+    ENERGYCOMMUNITY, 
+    PV_SYSTEM_POWER_MAPPING, 
+    StorageEntry
+    } from './types.js'
 import { stopNode, startNode } from './docker.js'
 
 export function processUpdate(experimentId: string, simulationAt: number, data: DataFrame, context: TModuleContext, localStorage:Map<string, StorageEntry>, mqttConnector: MQTTConnector){
@@ -72,11 +77,10 @@ export function processUpdate(experimentId: string, simulationAt: number, data: 
                 storageEntry.numberOfMembers.set(charger.energyCommunity, newNumberOfMembers)
             }
         }
+        let chargingPower = dynamicsById[charger.chargingSetPointDynamic]
+            chargingPower[CHARGING_STATION_POWER_MAPPING.Actual_Power] = charger.chargingSetPoint
+        result.addSeries({ dynamicId: charger.chargingSetPointDynamic, values: [chargingPower] })
 
-        result.addSeries({ dynamicId: charger.chargingSetPointDynamic, values: [charger.chargingSetPoint] })
-
-        const activePower = dynamicsById[charger.activePowerDynamic]
-        result.addSeries({ dynamicId: charger.activePowerDynamic, values: [[activePower[0] + charger.chargingSetPoint / 3, activePower[1] + charger.chargingSetPoint / 3, activePower[2] + charger.chargingSetPoint / 3]] })
     }
 
     for (const pv of storageEntry.pvs) {
@@ -130,7 +134,7 @@ export function processUpdate(experimentId: string, simulationAt: number, data: 
 
         if (pv.energyCommunity != ENERGYCOMMUNITY.NONE) {
             const production = dynamicsById[pv.productionDynamic]
-            mqttConnector.publishPVProduction(pv.id, production[0] + production[1] + production[2])
+            mqttConnector.publishPVProduction(pv.id, production[PV_SYSTEM_POWER_MAPPING.Actual_Infeed])
         }
     }
 
