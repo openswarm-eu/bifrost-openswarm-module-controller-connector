@@ -62,7 +62,7 @@ services:
     energy-community-controller-connector:
         build:
             context: ../
-            dockerfile: ./docker/Dockerfile
+            dockerfile: ./docker/Dockerfile.module
         image: energy-community-controller-connector:latest
         environment:
             BIFROST_URL: 'http://bifrost-core:9091'
