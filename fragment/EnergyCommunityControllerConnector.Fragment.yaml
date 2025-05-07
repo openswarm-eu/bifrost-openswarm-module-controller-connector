@@ -25,25 +25,6 @@ dynamics:
     tags:
       - energyCommunityController
 
-  CHGSTATION-POWER:
-    domain: powergrid
-    name: Chargestation Power
-    description: The currently consumed power of this Chargestation
-    visible: true
-    actionable: false
-    alwaysUpdate: false
-    defaultValue: 0
-    pinnable: true
-    dataLabels: [ 'kW' ]
-    chartType: LINE
-    schema:
-      type: number
-    tags:
-      - energyCommunityController
-
-
 mappings:
   ENERGY-COMMUNITY:
     - POWERGRID-CONNECTOR
-  CHGSTATION-POWER:
-    - CHARGING-POLE

@@ -56,7 +56,10 @@ const m = new BifrostZeroModule({
     initCallback: logic.initFn,
     updateCallback: logic.updateFn,
     fragmentFile: './fragment/EnergyCommunityControllerConnector.Fragment.yaml',
-    subscriptions: [TYPEID.ACTIVE_POWER_3P, TYPEID.ENERGY_COMMUNITY],
+    subscriptions: [
+        TYPEID.PV_SYSTEM_POWER,
+        TYPEID.CHGSTATION_POWER,
+        TYPEID.ENERGY_COMMUNITY],
     samplingRate: 900,
     moduleURL: process.env.MODULE_URL || 'http://localhost:1809',
     bifrostURL: process.env.BIFROST_URL || 'http://localhost:9091',
