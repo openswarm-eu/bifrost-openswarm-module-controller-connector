@@ -58,7 +58,6 @@ const m = new BifrostZeroModule({
     fragmentFile: './fragment/EnergyCommunityControllerConnector.Fragment.yaml',
     subscriptions: [
         TYPEID.PV_SYSTEM_POWER,
-        TYPEID.CHGSTATION_POWER,
         TYPEID.ENERGY_COMMUNITY],
     samplingRate: 900,
     moduleURL: process.env.MODULE_URL || 'http://localhost:1809',

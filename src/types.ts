@@ -1,18 +1,19 @@
 export const TYPEID = {
-    ACTIVE_POWER_3P     : "ACTIVE-POWER-3P",
-    CHARGING_POLE       : "CHARGING-POLE",
-    CHGSTATION_POWER    : "CHGSTATION-POWER",
-    SOLAR_PANEL         : "SOLAR-PANEL",
-    PV_SYSTEM_POWER     : "PV-SYSTEM-POWER",
-    ENERGY_COMMUNITY    : "ENERGY-COMMUNITY",
-    POWERGRID_CONNECTOR : "POWERGRID-CONNECTOR", 
+    ACTIVE_POWER_3P      : "ACTIVE-POWER-3P",
+    CHARGING_POLE        : "CHARGING-POLE",
+    CHGSTATION_POWER     : "CHGSTATION-POWER",
+    CHGSTATION_MAX_POWER : "CHGSTATION-MAX-POWER",
+    SOLAR_PANEL          : "SOLAR-PANEL",
+    PV_SYSTEM_POWER      : "PV-SYSTEM-POWER",
+    ENERGY_COMMUNITY     : "ENERGY-COMMUNITY",
+    POWERGRID_CONNECTOR  : "POWERGRID-CONNECTOR", 
 }
 
 export const ENERGYCOMMUNITY = {
-    NONE: "None",
-    A: "A",
-    B: "B",
-    C: "C"
+    NONE : "None",
+    A    : "A",
+    B    : "B",
+    C    : "C"
 }
 
 export interface Node {
