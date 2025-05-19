@@ -46,7 +46,7 @@ export function processInit(experimentId: string, localStorage: Map<string, Stor
                 storageEntry.chargers.push(charger)
 
                 for (const dynamicID of state.structures.entities[childId].dynamicIds) {
-                    if (state.dynamics.entities[dynamicID].typeId == TYPEID.CHGSTATION_POWER) {
+                    if (state.dynamics.entities[dynamicID].typeId == TYPEID.CHGSTATION_MAX_POWER) {
                         charger.chargingSetPointDynamic = dynamicID
                         break
                     }
