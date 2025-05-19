@@ -77,9 +77,8 @@ export function processUpdate(experimentId: string, simulationAt: number, data: 
                 storageEntry.numberOfMembers.set(charger.energyCommunity, newNumberOfMembers)
             }
         }
-        let chargingPower = dynamicsById[charger.chargingSetPointDynamic]
-            chargingPower[CHARGING_STATION_POWER_MAPPING.Actual_Power] = charger.chargingSetPoint
-        result.addSeries({ dynamicId: charger.chargingSetPointDynamic, values: [chargingPower] })
+        
+        result.addSeries({ dynamicId: charger.chargingSetPointDynamic, values: [charger.chargingSetPoint] })
 
     }
 
