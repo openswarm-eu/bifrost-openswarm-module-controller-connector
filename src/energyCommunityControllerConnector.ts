@@ -59,7 +59,7 @@ const m = new BifrostZeroModule({
     subscriptions: [
         TYPEID.PV_SYSTEM_POWER,
         TYPEID.ENERGY_COMMUNITY],
-    samplingRate: 900,
+    samplingRate: process.env.SAMPLING_RATE ? Number(process.env.SAMPLING_RATE) : 900,
     moduleURL: process.env.MODULE_URL || 'http://localhost:1809',
     bifrostURL: process.env.BIFROST_URL || 'http://localhost:9091',
     hook: [300]
