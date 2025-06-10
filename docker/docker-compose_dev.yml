@@ -4,7 +4,7 @@ services:
         image: emqx/emqx
         ports:
             - 1883:1883
- 
+
     influxdb:
         image: influxdb:2.7.5-alpine
         environment:
@@ -14,7 +14,7 @@ services:
             DOCKER_INFLUXDB_INIT_ORG: 'siemens'
             DOCKER_INFLUXDB_INIT_BUCKET: 'siemens'
             DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: '1d478854045f485ac83e0c39a04c0edae20ea94295c222850f1b64dfd1161b65'
-  
+
     bifrost-core:
         image: cr.siemens.com/bifrost/bifrost-zero:rc-v1.4
         environment:
@@ -40,7 +40,7 @@ services:
             - bifrost-core
 
     energy-community-asset-simulator:
-        image: cr.siemens.com/openswarm/energy-community-asset-simulator:v1.1.0
+        image: cr.siemens.com/openswarm/energy-community-asset-simulator:v1.2.0
         environment:
             BIFROST_URL: 'http://bifrost-core:9091'
             MODULE_URL: 'http://energy-community-asset-simulator:1809'
