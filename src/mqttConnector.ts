@@ -1,14 +1,15 @@
 import mqtt from "mqtt"; 
 
-const PRODUCTION_SUFFIX = "production"
-const CHARGING_SETPOINT_SUFFIX = "chargingSetPoint"
+const DEMAND_SUFFIX = "demand"
+const SETPOINT_SUFFIX = "setPoint"
+const MEASUREMENT_SUFFIX = "measurement"
 
-type chargingSetPoint = {
-    chargingSetPoint: number;
+type setPoint = {
+    setPoint: number;
 }
 
 type Callback = {
-    (chargingSetPoint: number): void;
+    (setPoint: number): void;
   };
 
 export class MQTTConnector {
@@ -28,24 +29,28 @@ export class MQTTConnector {
             const callback = this.callbacks.get(topic)
 
             if (callback != undefined) {
-                const msg: chargingSetPoint = JSON.parse(message.toString())
-                callback(msg.chargingSetPoint)
+                const msg: setPoint = JSON.parse(message.toString())
+                callback(msg.setPoint)
             }
         })
     }
 
-    publishPVProduction(nodeId: string, production: number) {
-        this.client?.publish(`${nodeId}/${PRODUCTION_SUFFIX}`, JSON.stringify({production: production}))
+    publishDemand(nodeId: string, demand: number) {
+        this.client?.publish(`${nodeId}/${DEMAND_SUFFIX}`, JSON.stringify({demand: demand}))
     }
 
-    subscribeChargingSetPoint(nodeId: string, callback: Callback) {
-        const topic = `${nodeId}/${CHARGING_SETPOINT_SUFFIX}`
+    publishPowerMeasurement(nodeId: string, measurement: number) {
+        this.client?.publish(`${nodeId}/${MEASUREMENT_SUFFIX}`, JSON.stringify({measurement: measurement}))
+    }
+
+    subscribeSetPoint(nodeId: string, callback: Callback) {
+        const topic = `${nodeId}/${SETPOINT_SUFFIX}`
         this.callbacks.set(topic, callback)
         this.client?.subscribe(topic)
     }
 
-    unsubscribeChargingSetPoint(nodeId: string) {
-        const topic = `${nodeId}/${CHARGING_SETPOINT_SUFFIX}`
+    unsubscribeSetPoint(nodeId: string) {
+        const topic = `${nodeId}/${SETPOINT_SUFFIX}`
         this.client?.unsubscribe(topic)
         this.callbacks.delete(topic)
     }

@@ -1,10 +1,10 @@
 import { DataFrame, Log, TModuleContext, TState } from 'bifrost-zero-common'
 import { BifrostZeroModule } from 'bifrost-zero-sdk'
 import { MQTTConnector } from './mqttConnector.js'
-import { ENERGYCOMMUNITY, StorageEntry, TYPEID } from './types.js'
+import { ENERGYCOMMUNITY, StorageEntry, TYPEID, GRIDSENSORASSIGNMENT, GRIDSENSORNAME } from './types.js'
 import { processInit } from './processInit.js'
 import { processUpdate } from './processUpdate.js'
-import { stopNode } from './docker.js'
+import { stopContainer } from './docker.js'
 
 const localStorage: Map<string, StorageEntry> = new Map()
 const logic = {
@@ -58,7 +58,13 @@ const m = new BifrostZeroModule({
     fragmentFile: './fragment/EnergyCommunityControllerConnector.Fragment.yaml',
     subscriptions: [
         TYPEID.PV_SYSTEM_POWER,
-        TYPEID.ENERGY_COMMUNITY],
+        TYPEID.CHGSTATION_POWER,
+        TYPEID.ENERGY_COMMUNITY,
+        TYPEID.GRID_SENSOR_NAME,
+        TYPEID.GRID_SENSOR_ASSIGNMENT,
+        TYPEID.GRID_SENSOR_POWERLIMIT,
+        TYPEID.GRID_SENSOR_POWERMEASUREMENT
+    ],
     samplingRate: process.env.SAMPLING_RATE ? Number(process.env.SAMPLING_RATE) : 900,
     moduleURL: process.env.MODULE_URL || 'http://localhost:1809',
     bifrostURL: process.env.BIFROST_URL || 'http://localhost:9091',
@@ -70,15 +76,21 @@ process.on('SIGINT', function () {
     console.log("Shutting down and stopping docker containers. Please wait...");
 
     for (const storageEntry of localStorage.values()) {
-        for (const charger of storageEntry.chargers) {
-            if (charger.energyCommunity != ENERGYCOMMUNITY.NONE) {
-                stopNode(charger.id)
+        for (const node of storageEntry.chargers) {
+            if (node.energyCommunity != ENERGYCOMMUNITY.NONE && node.gridSensorAssignment != GRIDSENSORASSIGNMENT.UNASSIGNED) {
+                stopContainer(node.id)
             }
         }
 
-        for (const pv of storageEntry.pvs) {
-            if (pv.energyCommunity != ENERGYCOMMUNITY.NONE) {
-                stopNode(pv.id)
+        for (const node of storageEntry.pvs) {
+            if (node.energyCommunity != ENERGYCOMMUNITY.NONE && node.gridSensorAssignment != GRIDSENSORASSIGNMENT.UNASSIGNED) {
+                stopContainer(node.id)
+            }
+        }
+
+        for (const sensor of storageEntry.sensors) {
+            if (sensor.id != GRIDSENSORNAME.INACTIVE) {
+                stopContainer(sensor.id)
             }
         }
     }
