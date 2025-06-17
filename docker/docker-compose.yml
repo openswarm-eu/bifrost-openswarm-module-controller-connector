@@ -40,7 +40,7 @@ services:
             - bifrost-core
 
     energy-community-asset-simulator:
-        image: cr.siemens.com/openswarm/energy-community-asset-simulator:v1.1.0
+        image: cr.siemens.com/openswarm/energy-community-asset-simulator:v1.2.0
         environment:
             BIFROST_URL: 'http://bifrost-core:9091'
             MODULE_URL: 'http://energy-community-asset-simulator:1809'
