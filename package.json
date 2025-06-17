@@ -7,6 +7,7 @@
         "prestart": "npm run tsc",
         "start": "node ./build/energyCommunityControllerConnector.js",
         "start:docker": "npm run tsc && cross-env MODULE_URL=http://host.docker.internal:1809 node ./build/energyCommunityControllerConnector.js",
+        "start:docker:linux": "npm run tsc && cross-env MODULE_URL=http://172.17.0.1:1809 node ./build/energyCommunityControllerConnector.js",
         "tsc": "tsc -p tsconfig.json",
         "test": "echo \"Error: no test specified\" && exit 1",
         "debug": "tsx ./src/EnergyCommunityControllerConnector.ts",

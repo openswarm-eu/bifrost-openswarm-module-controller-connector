@@ -16,7 +16,7 @@ services:
             DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: '1d478854045f485ac83e0c39a04c0edae20ea94295c222850f1b64dfd1161b65'
   
     bifrost-core:
-        image: cr.siemens.com/bifrost/bifrost-zero:latest
+        image: cr.siemens.com/bifrost/bifrost-zero:rc-v1.4
         environment:
             BIFROST__cdl_url: '"http://influxdb:8086"'
             BIFROST__cdl_startupAttempts: 20
@@ -31,7 +31,7 @@ services:
             - 9091:9091
 
     fenrir:
-        image: cr.siemens.com/bifrost/bifrost-fenrir:zero-v1.3.0
+        image: cr.siemens.com/bifrost/bifrost-fenrir:zero-v1.4.0
         environment:
             MODULE_URL: "http://fenrir:7001"
             BIFROST_URL: "http://bifrost-core:9091"
@@ -39,25 +39,12 @@ services:
         depends_on:
             - bifrost-core
 
-    weather-model:
-        image: cr.siemens.com/bifrost/bifrost-swg:zero-v2.0.0
+    energy-community-asset-simulator:
+        image: cr.siemens.com/openswarm/energy-community-asset-simulator:v1.2.0
         environment:
-            MODULE_URL: "http://weather-model:7075"
-            BIFROST_URL: "http://bifrost-core:9091"
+            BIFROST_URL: 'http://bifrost-core:9091'
+            MODULE_URL: 'http://energy-community-asset-simulator:1809'
             SAMPLING_RATE: 900
-        depends_on:
-            - bifrost-core
- 
-    prosumer-model:
-        image: cr.siemens.com/bifrost/bifrost-prosumermodel:zero-v3.0.0
-        environment:
-            MODULE_URL: "http://prosumer-model:7074"
-            BIFROST_URL: "http://bifrost-core:9091"
-            SAMPLING_RATE: 900
-            EV_CLASS_ACTIVE: false
-            BAT_OPT_CLASS: false
-        depends_on:
-            - bifrost-core
 
     energy-community-controller-connector:
         build:
@@ -68,6 +55,7 @@ services:
             BIFROST_URL: 'http://bifrost-core:9091'
             MODULE_URL: 'http://energy-community-controller-connector:1809'
             MQTT_URL: 'mqtt://mqtt-broker'
+            SAMPLING_RATE: 900
         privileged: true
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
