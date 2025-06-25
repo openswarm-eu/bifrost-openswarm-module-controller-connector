@@ -38,9 +38,6 @@ export function startSensor(sensor:Sensor, boostrapNode:boolean) {
 }
 
 export function stopContainer(id: string) {
-    /*if (id === "pv1") {
-        return
-    }*/
     child.execSync(`docker stop ${id}`)
-    child.execSync(`docker rm ${id}`)
+    child.execSync(`docker rm -f ${id}`)
 }
