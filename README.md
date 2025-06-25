@@ -6,6 +6,7 @@ Ensure, that you either have the openswarm energy community controller docker im
 
 * cr.siemens.com/openswarm/energy-community-controller/charger 
 * cr.siemens.com/openswarm/energy-community-controller/pv
+* cr.siemens.com/openswarm/energy-community-controller/sensor
 
 stored locally or access to the docker repo.
 
