@@ -2,9 +2,6 @@ import { Node, Sensor, GRIDSENSORASSIGNMENT } from './types.js'
 import * as child from 'child_process';
 
 export function startNode(node:Node, boostrapNode:boolean) {
-    /*if (node.id === "pv1") {
-        return
-    }*/
     let childArguments: string[] = ["run", "--add-host=host.docker.internal:host-gateway", "-d", "--name", node.id, node.dockerImage,
         "-url", "tcp://host.docker.internal:1883", "-id", node.id, "-sensorId", node.gridSensorAssignment, "-energyCommunityId", node.energyCommunity]    
 
@@ -19,6 +16,7 @@ export function startNode(node:Node, boostrapNode:boolean) {
 }
 
 export function startSensor(sensor:Sensor, boostrapNode:boolean) {
+    stopContainer(sensor.id)
     let childArguments: string[] = ["run", "--add-host=host.docker.internal:host-gateway", "-d", "--name", sensor.id, sensor.dockerImage,
         "-url", "tcp://host.docker.internal:1883", "-id", sensor.id, "-limit", String(sensor.powerLimit)]    
 
@@ -38,9 +36,10 @@ export function startSensor(sensor:Sensor, boostrapNode:boolean) {
 }
 
 export function stopContainer(id: string) {
-    /*if (id === "pv1") {
-        return
-    }*/
-    child.execSync(`docker stop ${id}`)
-    child.execSync(`docker rm ${id}`)
+    try {
+        child.execSync(`docker stop ${id}`)
+        child.execSync(`docker rm -f ${id}`)
+    } catch (error) {
+        console.error(`Error stopping container ${id}:`, error);
+     }
 }
