@@ -80,10 +80,10 @@ export function processUpdate(experimentId: string, simulationAt: number, data: 
 
         if (energyStorage.energyCommunity != ENERGYCOMMUNITY.NONE && energyStorage.gridSensorAssignment != GRIDSENSORASSIGNMENT.UNASSIGNED) {
             const demand = dynamicsById[energyStorage.potentialDynamic]
-            mqttConnector.publishPotential(energyStorage.id, demand[ENERGY_STORAGE_MAPPING.Charge_Potential], demand[ENERGY_STORAGE_MAPPING.Discharge_Potential])
+            mqttConnector.publishPotential(energyStorage.id, demand[ENERGY_STORAGE_MAPPING.Charge_Potential], -demand[ENERGY_STORAGE_MAPPING.Discharge_Potential])
         }
 
-        result.addSeries({ dynamicId: energyStorage.setPointDynamic, values: [[energyStorage.chargeSetPoint, energyStorage.dischargeSetPoint]] })
+        result.addSeries({ dynamicId: energyStorage.setPointDynamic, values: [[energyStorage.chargeSetPoint, -energyStorage.dischargeSetPoint]] })
         energyStorage.chargeSetPoint = 0
         energyStorage.dischargeSetPoint = 0
     }
