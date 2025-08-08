@@ -1,5 +1,5 @@
 import { TState } from 'bifrost-zero-common'
-import { ENERGYCOMMUNITY, GRIDSENSORASSIGNMENT, Node, Charger, PV, Sensor, StorageEntry, TYPEID, SENSOR_MEMBER_KEY, GRIDSENSORNAME } from './types.js'
+import { ENERGYCOMMUNITY, GRIDSENSORASSIGNMENT, Node, Charger, PV, EnergyStorage, Sensor, StorageEntry, TYPEID, SENSOR_MEMBER_KEY, GRIDSENSORNAME } from './types.js'
 import { stopContainer } from './docker.js'
 import { v4 } from 'uuid'
 
@@ -15,6 +15,7 @@ export function processInit(experimentId: string, localStorage: Map<string, Stor
     let storageEntry = {
         chargers: [] as Charger[],
         pvs: [] as PV[],
+        energyStorage: [] as EnergyStorage[],
         sensors: [] as Sensor[],
         numberOfMembers: new Map()
     }
@@ -33,51 +34,85 @@ export function processInit(experimentId: string, localStorage: Map<string, Stor
 
         switch (state.structures.entities[elementId].typeId) {
             case TYPEID.POWERGRID_CONNECTOR:
-                const node: Node = {
-                    id: v4(),
-                    leaderElectionParticipant: false,
-                    energyCommunity: ENERGYCOMMUNITY.NONE,
-                    energyCommunityDynamic: "",
-                    gridSensorAssignment: GRIDSENSORASSIGNMENT.UNASSIGNED,
-                    gridSensorAssignmentDynamic: "",
-                    dockerImage: "",
-                    setPoint: 0,
-                    setPointDynamic: "",
-                    demandDynamic: "",
-                }
+                let energyCommunityDynamic
+                let gridSensorAssignmentDynamic
 
                 for (const dynamicID of state.structures.entities[elementId].dynamicIds) {
                     if (state.dynamics.entities[dynamicID].typeId == TYPEID.ENERGY_COMMUNITY) {
-                        node.energyCommunityDynamic = dynamicID
+                        energyCommunityDynamic = dynamicID
                     } else if (state.dynamics.entities[dynamicID].typeId == TYPEID.GRID_SENSOR_ASSIGNMENT) {
-                        node.gridSensorAssignmentDynamic = dynamicID
+                        gridSensorAssignmentDynamic = dynamicID
                     }
                 }
 
                 for (const childId of state.structures.entities[elementId].childIds) {
                     if (state.structures.entities[childId]?.typeId == TYPEID.CHARGING_POLE) {
-                        node.dockerImage = "cr.siemens.com/openswarm/energy-community-controller/charger"
-                        storageEntry.chargers.push(node)
+                        const charger: Charger = {
+                            id: v4(),
+                            leaderElectionParticipant: false,
+                            energyCommunity: ENERGYCOMMUNITY.NONE,
+                            energyCommunityDynamic: energyCommunityDynamic,
+                            gridSensorAssignment: GRIDSENSORASSIGNMENT.UNASSIGNED,
+                            gridSensorAssignmentDynamic: gridSensorAssignmentDynamic,
+                            dockerImage: "cr.siemens.com/openswarm/energy-community-controller/charger",
+                            setPoint: 0,
+                            setPointDynamic: "",
+                            demandDynamic: "",
+                        }
+                        storageEntry.chargers.push(charger)
 
                         for (const dynamicID of state.structures.entities[childId].dynamicIds) {
                             if (state.dynamics.entities[dynamicID].typeId == TYPEID.CHGSTATION_MAX_POWER) {
-                                node.setPointDynamic = dynamicID
+                                gridSensorAssignmentDynamic.setPointDynamic = dynamicID
                             } else if (state.dynamics.entities[dynamicID].typeId == TYPEID.CHGSTATION_POWER) {
-                                node.demandDynamic = dynamicID
+                                gridSensorAssignmentDynamic.demandDynamic = dynamicID
                             }
                         }
 
-                    
                     } else if (state.structures.entities[childId]?.typeId == TYPEID.SOLAR_PANEL) {
-                        //node.id = "pv1"
-                        node.dockerImage = "cr.siemens.com/openswarm/energy-community-controller/pv"
-                        storageEntry.pvs.push(node)
+                        const pv: PV = {
+                            id: v4(),
+                            leaderElectionParticipant: false,
+                            energyCommunity: ENERGYCOMMUNITY.NONE,
+                            energyCommunityDynamic: energyCommunityDynamic,
+                            gridSensorAssignment: GRIDSENSORASSIGNMENT.UNASSIGNED,
+                            gridSensorAssignmentDynamic: gridSensorAssignmentDynamic,
+                            dockerImage: "cr.siemens.com/openswarm/energy-community-controller/pv",
+                            setPoint: 0,
+                            setPointDynamic: "",
+                            demandDynamic: "",
+                        }
+                        storageEntry.pvs.push(pv)
 
                         for (const dynamicID of state.structures.entities[childId].dynamicIds) {
                             if (state.dynamics.entities[dynamicID].typeId == TYPEID.PV_SYSTEM_MAX_POWER) {
-                                node.setPointDynamic = dynamicID
+                                pv.setPointDynamic = dynamicID
                             } else if (state.dynamics.entities[dynamicID].typeId == TYPEID.PV_SYSTEM_POWER) {
-                                node.demandDynamic = dynamicID
+                                pv.demandDynamic = dynamicID
+                            }
+                        }
+                        
+                    } else if (state.structures.entities[childId]?.typeId == TYPEID.BATTERY_SYSTEM) {
+                        const energyStorage: EnergyStorage = {
+                            id: v4(),
+                            leaderElectionParticipant: false,
+                            energyCommunity: ENERGYCOMMUNITY.NONE,
+                            energyCommunityDynamic: energyCommunityDynamic,
+                            gridSensorAssignment: GRIDSENSORASSIGNMENT.UNASSIGNED,
+                            gridSensorAssignmentDynamic: gridSensorAssignmentDynamic,
+                            dockerImage: "cr.siemens.com/openswarm/energy-community-controller/storage",
+                            chargeSetPoint: 0,
+                            dischargeSetPoint: 0,
+                            setPointDynamic: "",
+                            potentialDynamic: "",
+                        }
+                        storageEntry.energyStorage.push(energyStorage)
+
+                        for (const dynamicID of state.structures.entities[childId].dynamicIds) {
+                            if (state.dynamics.entities[dynamicID].typeId == TYPEID.BATTERY_SYSTEM_MAX_POWER) {
+                                energyStorage.setPointDynamic = dynamicID
+                            } else if (state.dynamics.entities[dynamicID].typeId == TYPEID.BATTERY_SYSTEM_POWER) {
+                                energyStorage.potentialDynamic = dynamicID
                             }
                         }
                     }

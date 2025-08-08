@@ -40,6 +40,6 @@ export function stopContainer(id: string) {
         child.execSync(`docker stop ${id}`)
         child.execSync(`docker rm -f ${id}`)
     } catch (error) {
-        console.error(`Error stopping container ${id}:`, error);
+        console.error(`Error stopping container ${id}.`);
      }
 }
