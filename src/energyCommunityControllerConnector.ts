@@ -66,7 +66,7 @@ const m = new BifrostZeroModule({
         TYPEID.GRID_SENSOR_POWERMEASUREMENT,
         TYPEID.BATTERY_SYSTEM_POWER,
     ],
-    samplingRate: process.env.SAMPLING_RATE ? Number(process.env.SAMPLING_RATE) : 900,
+    samplingRate: process.env.SAMPLING_RATE ? Number(process.env.SAMPLING_RATE) : 60,
     moduleURL: process.env.MODULE_URL || 'http://localhost:1809',
     bifrostURL: process.env.BIFROST_URL || 'http://localhost:9091',
     hook: [300]
