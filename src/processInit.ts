@@ -63,9 +63,9 @@ export function processInit(experimentId: string, localStorage: Map<string, Stor
 
                         for (const dynamicID of state.structures.entities[childId].dynamicIds) {
                             if (state.dynamics.entities[dynamicID].typeId == TYPEID.CHGSTATION_MAX_POWER) {
-                                gridSensorAssignmentDynamic.setPointDynamic = dynamicID
+                                charger.setPointDynamic = dynamicID
                             } else if (state.dynamics.entities[dynamicID].typeId == TYPEID.CHGSTATION_POWER) {
-                                gridSensorAssignmentDynamic.demandDynamic = dynamicID
+                                charger.demandDynamic = dynamicID
                             }
                         }
 
