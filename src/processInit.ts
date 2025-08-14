@@ -8,7 +8,8 @@ export function processInit(experimentId: string, localStorage: Map<string, Stor
         const storageEntry = localStorage.get(experimentId)
 
         storageEntry!.chargers.filter(node => node.energyCommunity != ENERGYCOMMUNITY.NONE).forEach(ch => stopContainer(ch.id));
-        storageEntry!.pvs.filter(node => node.energyCommunity != ENERGYCOMMUNITY.NONE).forEach(ch => stopContainer(ch.id));
+        storageEntry!.pvs.filter(node => node.energyCommunity != ENERGYCOMMUNITY.NONE).forEach(pv => stopContainer(pv.id));
+        storageEntry!.energyStorage.filter(node => node.energyCommunity != ENERGYCOMMUNITY.NONE).forEach(es => stopContainer(es.id));
         storageEntry!.sensors.filter(sensor => sensor.id != GRIDSENSORNAME.INACTIVE).forEach(sensor => stopContainer(sensor.id));
     }
 
