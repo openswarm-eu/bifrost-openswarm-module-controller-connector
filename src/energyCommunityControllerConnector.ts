@@ -69,7 +69,7 @@ const m = new BifrostZeroModule({
     samplingRate: process.env.SAMPLING_RATE ? Number(process.env.SAMPLING_RATE) : 60,
     moduleURL: process.env.MODULE_URL || 'http://localhost:1809',
     bifrostURL: process.env.BIFROST_URL || 'http://localhost:9091',
-    hook: [300]
+    hook: process.env.HOOK ? JSON.parse(process.env.HOOK) : [300]
 })
 m.start()
 
