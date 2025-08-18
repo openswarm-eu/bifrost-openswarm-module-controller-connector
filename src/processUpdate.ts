@@ -4,13 +4,17 @@ import {
     ENERGYCOMMUNITY, 
     CHARGING_STATION_POWER_MAPPING,
     PV_SYSTEM_POWER_MAPPING,
+    ENERGY_STORAGE_MAPPING,
     StorageEntry,
     GRIDSENSORASSIGNMENT,
     SENSOR_MEMBER_KEY,
     GRIDSENSORNAME,
-    Node
+    Node,
+    Charger,
+    EnergyStorage
     } from './types.js'
 import { stopContainer, startNode, startSensor } from './docker.js'
+import mqtt from 'mqtt'
 
 export function processUpdate(experimentId: string, simulationAt: number, data: DataFrame, context: TModuleContext, localStorage:Map<string, StorageEntry>, mqttConnector: MQTTConnector){
     var dynamicsById = {}
@@ -30,8 +34,14 @@ export function processUpdate(experimentId: string, simulationAt: number, data: 
     }
 
     for (const charger of storageEntry.chargers) {
-        startStopNode(charger, storageEntry, dynamicsById, context, mqttConnector)
-        
+        startStopNode(
+            charger,
+            storageEntry,
+            dynamicsById,
+            context,
+            mqttConnector,
+            () => mqttConnector.subscribeSetPoint(charger.id, (setPoint => charger.setPoint = setPoint)))
+
         if (charger.energyCommunity != ENERGYCOMMUNITY.NONE && charger.gridSensorAssignment != GRIDSENSORASSIGNMENT.UNASSIGNED) {
             const demand = dynamicsById[charger.demandDynamic]
             mqttConnector.publishDemand(charger.id, demand[CHARGING_STATION_POWER_MAPPING.Shifted_Demand])
@@ -41,14 +51,40 @@ export function processUpdate(experimentId: string, simulationAt: number, data: 
     }
 
     for (const pv of storageEntry.pvs) {
-        startStopNode(pv, storageEntry, dynamicsById, context, mqttConnector)
-        
+        startStopNode(
+            pv,
+            storageEntry,
+            dynamicsById,
+            context,
+            mqttConnector,
+            () => mqttConnector.subscribeSetPoint(pv.id, (setPoint => pv.setPoint = setPoint)))
+
         if (pv.energyCommunity != ENERGYCOMMUNITY.NONE && pv.gridSensorAssignment != GRIDSENSORASSIGNMENT.UNASSIGNED) {
             const demand = dynamicsById[pv.demandDynamic]
             mqttConnector.publishDemand(pv.id, demand[PV_SYSTEM_POWER_MAPPING.Infeed_Potential])
         }
 
         result.addSeries({ dynamicId: pv.setPointDynamic, values: [pv.setPoint] })
+    }
+
+    for (const energyStorage of storageEntry.energyStorage) {
+        startStopNode(
+            energyStorage,
+            storageEntry,
+            dynamicsById,
+            context,
+            mqttConnector,
+            () => mqttConnector.subscribeEnergyStorageSetPoint(energyStorage.id, (chargeSetPoint, dischargeSetPoint) => {
+                energyStorage.chargeSetPoint = chargeSetPoint
+                energyStorage.dischargeSetPoint = dischargeSetPoint
+            }))
+
+        if (energyStorage.energyCommunity != ENERGYCOMMUNITY.NONE && energyStorage.gridSensorAssignment != GRIDSENSORASSIGNMENT.UNASSIGNED) {
+            const demand = dynamicsById[energyStorage.potentialDynamic]
+            mqttConnector.publishPotential(energyStorage.id, demand[ENERGY_STORAGE_MAPPING.Charge_Potential], -demand[ENERGY_STORAGE_MAPPING.Discharge_Potential])
+        }
+
+        result.addSeries({ dynamicId: energyStorage.setPointDynamic, values: [[energyStorage.chargeSetPoint, -energyStorage.dischargeSetPoint]] })
     }
 
     for (const sensor of storageEntry.sensors) {
@@ -113,7 +149,7 @@ export function processUpdate(experimentId: string, simulationAt: number, data: 
     return result
 }
 
-function startStopNode(node: Node, storageEntry: StorageEntry, dynamicsById: any, context: TModuleContext, mqttConnector: MQTTConnector) {
+function startStopNode(node: Node, storageEntry: StorageEntry, dynamicsById: any, context: TModuleContext, mqttConnector: MQTTConnector, subscribeSetPointFunction: () => void) {
     const oldEnergyCommunity = node.energyCommunity
         const oldGridSensorAssignment = node.gridSensorAssignment
         node.energyCommunity = dynamicsById[node.energyCommunityDynamic]
@@ -123,8 +159,15 @@ function startStopNode(node: Node, storageEntry: StorageEntry, dynamicsById: any
             if (oldEnergyCommunity != ENERGYCOMMUNITY.NONE && oldGridSensorAssignment != GRIDSENSORASSIGNMENT.UNASSIGNED) {
                 context.log.write(`stop node ${node.id}`)
 
-                mqttConnector.unsubscribeSetPoint(node.id)
-                node.setPoint = 0
+                
+                if (node.hasOwnProperty('setPoint')) {
+                    mqttConnector.unsubscribeSetPoint(node.id);
+                    (node as Charger).setPoint = 0;
+                } else {
+                    mqttConnector.unsubscribeEnergyStorageSetPoint(node.id);
+                    (node as EnergyStorage).chargeSetPoint = 0;
+                    (node as EnergyStorage).dischargeSetPoint = 0;
+                }
 
                 stopContainer(node.id)
                 const newNumberOfMembers = storageEntry.numberOfMembers.get(oldEnergyCommunity)! - 1
@@ -162,7 +205,7 @@ function startStopNode(node: Node, storageEntry: StorageEntry, dynamicsById: any
                     startNode(node, false)
                 }
 
-                mqttConnector.subscribeSetPoint(node.id, (setPoint => node.setPoint = setPoint))
+                subscribeSetPointFunction()
 
                 const newNumberOfMembers = storageEntry.numberOfMembers.get(node.energyCommunity)! + 1
                 storageEntry.numberOfMembers.set(node.energyCommunity, newNumberOfMembers)

@@ -13,6 +13,9 @@ export const TYPEID = {
     GRID_SENSOR_ASSIGNMENT          : "GRID-SENSOR-ASSIGNMENT",
     GRID_SENSOR_POWERLIMIT          : "GRID-SENSOR-POWERLIMIT",
     GRID_SENSOR_POWERMEASUREMENT    : "GRID-SENSOR-POWERMEASUREMENT",
+    BATTERY_SYSTEM                  : "BATTERY-SYSTEM",
+    BATTERY_SYSTEM_POWER            : "BATTERY-SYSTEM-POWER",
+    BATTERY_SYSTEM_MAX_POWER        : "BATTERY-SYSTEM-MAX-POWER",
 }
 
 
@@ -61,13 +64,20 @@ export interface Node {
     gridSensorAssignment: typeof GRIDSENSORASSIGNMENT.UNASSIGNED | typeof GRIDSENSORASSIGNMENT.S1 | typeof GRIDSENSORASSIGNMENT.S2 | typeof GRIDSENSORASSIGNMENT.S3 | typeof GRIDSENSORASSIGNMENT.S4 | 
                             typeof GRIDSENSORASSIGNMENT.S5 | typeof GRIDSENSORASSIGNMENT.S6 | typeof GRIDSENSORASSIGNMENT.S7 | typeof GRIDSENSORASSIGNMENT.S8 | typeof GRIDSENSORASSIGNMENT.S9
     gridSensorAssignmentDynamic: string
-    setPoint: number
     setPointDynamic: string
+}
+export interface Charger extends Node {
+    setPoint: number
     demandDynamic: string
 }
 
-export type Charger = Node
-export type PV = Node
+export interface EnergyStorage extends Node {
+    chargeSetPoint: number
+    dischargeSetPoint: number
+    potentialDynamic: string
+}
+
+export type PV = Charger
 
 export interface Sensor {
     id: typeof GRIDSENSORNAME.INACTIVE | typeof GRIDSENSORNAME.S1 | typeof GRIDSENSORNAME.S2 | typeof GRIDSENSORNAME.S3 | typeof GRIDSENSORNAME.S4 | 
@@ -86,6 +96,7 @@ export interface Sensor {
 export type StorageEntry = {
     chargers: Charger[]
     pvs: PV[]
+    energyStorage: EnergyStorage[]
     sensors: Sensor[]
     numberOfMembers: Map<string, number>
 }
@@ -99,4 +110,10 @@ export const CHARGING_STATION_POWER_MAPPING = {
     Power_Demand : 0,
     Actual_Power : 1,
     Shifted_Demand: 2,
+}
+
+export const ENERGY_STORAGE_MAPPING = {
+    Charge_Potential: 0,
+    Actual_Power: 1,
+    Discharge_Potential: 2,
 }

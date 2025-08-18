@@ -63,12 +63,13 @@ const m = new BifrostZeroModule({
         TYPEID.GRID_SENSOR_NAME,
         TYPEID.GRID_SENSOR_ASSIGNMENT,
         TYPEID.GRID_SENSOR_POWERLIMIT,
-        TYPEID.GRID_SENSOR_POWERMEASUREMENT
+        TYPEID.GRID_SENSOR_POWERMEASUREMENT,
+        TYPEID.BATTERY_SYSTEM_POWER,
     ],
-    samplingRate: process.env.SAMPLING_RATE ? Number(process.env.SAMPLING_RATE) : 900,
+    samplingRate: process.env.SAMPLING_RATE ? Number(process.env.SAMPLING_RATE) : 60,
     moduleURL: process.env.MODULE_URL || 'http://localhost:1809',
     bifrostURL: process.env.BIFROST_URL || 'http://localhost:9091',
-    hook: [300]
+    hook: process.env.HOOK ? JSON.parse(process.env.HOOK) : [300]
 })
 m.start()
 
@@ -83,6 +84,12 @@ process.on('SIGINT', function () {
         }
 
         for (const node of storageEntry.pvs) {
+            if (node.energyCommunity != ENERGYCOMMUNITY.NONE && node.gridSensorAssignment != GRIDSENSORASSIGNMENT.UNASSIGNED) {
+                stopContainer(node.id)
+            }
+        }
+
+        for (const node of storageEntry.energyStorage) {
             if (node.energyCommunity != ENERGYCOMMUNITY.NONE && node.gridSensorAssignment != GRIDSENSORASSIGNMENT.UNASSIGNED) {
                 stopContainer(node.id)
             }
