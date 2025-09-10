@@ -1,16 +1,16 @@
 import { TState } from 'bifrost-zero-common'
 import { ENERGYCOMMUNITY, GRIDSENSORASSIGNMENT, Node, Charger, PV, EnergyStorage, Sensor, StorageEntry, TYPEID, SENSOR_MEMBER_KEY, GRIDSENSORNAME } from './types.js'
-import { stopContainer } from './docker.js'
+import { killContainer } from './docker.js'
 import { v4 } from 'uuid'
 
 export function processInit(experimentId: string, localStorage: Map<string, StorageEntry>, state: TState) {
     if (localStorage.has(experimentId)) {
         const storageEntry = localStorage.get(experimentId)
 
-        storageEntry!.chargers.filter(node => node.energyCommunity != ENERGYCOMMUNITY.NONE).forEach(ch => stopContainer(ch.id));
-        storageEntry!.pvs.filter(node => node.energyCommunity != ENERGYCOMMUNITY.NONE).forEach(pv => stopContainer(pv.id));
-        storageEntry!.energyStorage.filter(node => node.energyCommunity != ENERGYCOMMUNITY.NONE).forEach(es => stopContainer(es.id));
-        storageEntry!.sensors.filter(sensor => sensor.id != GRIDSENSORNAME.INACTIVE).forEach(sensor => stopContainer(sensor.id));
+        storageEntry!.chargers.filter(node => node.energyCommunity != ENERGYCOMMUNITY.NONE).forEach(ch => killContainer(ch.id));
+        storageEntry!.pvs.filter(node => node.energyCommunity != ENERGYCOMMUNITY.NONE).forEach(pv => killContainer(pv.id));
+        storageEntry!.energyStorage.filter(node => node.energyCommunity != ENERGYCOMMUNITY.NONE).forEach(es => killContainer(es.id));
+        storageEntry!.sensors.filter(sensor => sensor.id != GRIDSENSORNAME.INACTIVE).forEach(sensor => killContainer(sensor.id));
     }
 
     let storageEntry = {

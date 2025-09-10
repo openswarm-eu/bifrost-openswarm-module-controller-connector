@@ -4,7 +4,7 @@ import { MQTTConnector } from './mqttConnector.js'
 import { ENERGYCOMMUNITY, StorageEntry, TYPEID, GRIDSENSORASSIGNMENT, GRIDSENSORNAME } from './types.js'
 import { processInit } from './processInit.js'
 import { processUpdate } from './processUpdate.js'
-import { stopContainer } from './docker.js'
+import { killContainer } from './docker.js'
 
 const localStorage: Map<string, StorageEntry> = new Map()
 const logic = {
@@ -79,25 +79,25 @@ process.on('SIGINT', function () {
     for (const storageEntry of localStorage.values()) {
         for (const node of storageEntry.chargers) {
             if (node.energyCommunity != ENERGYCOMMUNITY.NONE && node.gridSensorAssignment != GRIDSENSORASSIGNMENT.UNASSIGNED) {
-                stopContainer(node.id)
+                killContainer(node.id)
             }
         }
 
         for (const node of storageEntry.pvs) {
             if (node.energyCommunity != ENERGYCOMMUNITY.NONE && node.gridSensorAssignment != GRIDSENSORASSIGNMENT.UNASSIGNED) {
-                stopContainer(node.id)
+                killContainer(node.id)
             }
         }
 
         for (const node of storageEntry.energyStorage) {
             if (node.energyCommunity != ENERGYCOMMUNITY.NONE && node.gridSensorAssignment != GRIDSENSORASSIGNMENT.UNASSIGNED) {
-                stopContainer(node.id)
+                killContainer(node.id)
             }
         }
 
         for (const sensor of storageEntry.sensors) {
             if (sensor.id != GRIDSENSORNAME.INACTIVE) {
-                stopContainer(sensor.id)
+                killContainer(sensor.id)
             }
         }
     }
