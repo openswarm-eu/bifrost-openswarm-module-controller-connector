@@ -57,7 +57,7 @@ const m = new BifrostZeroModule({
     updateCallback: logic.updateFn,
     fragmentFile: './fragment/EnergyCommunityControllerConnector.Fragment.yaml',
     subscriptions: [
-        TYPEID.PV_SYSTEM_POWER,
+        TYPEID.INFEED_PLANT_POWER,
         TYPEID.CHGSTATION_POWER,
         TYPEID.ENERGY_COMMUNITY,
         TYPEID.GRID_SENSOR_NAME,
