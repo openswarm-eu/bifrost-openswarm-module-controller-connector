@@ -86,9 +86,31 @@ export function processInit(experimentId: string, localStorage: Map<string, Stor
                         storageEntry.pvs.push(pv)
 
                         for (const dynamicID of state.structures.entities[childId].dynamicIds) {
-                            if (state.dynamics.entities[dynamicID].typeId == TYPEID.PV_SYSTEM_MAX_POWER) {
+                            if (state.dynamics.entities[dynamicID].typeId == TYPEID.INFEED_PLANT_MAX_POWER) {
                                 pv.setPointDynamic = dynamicID
-                            } else if (state.dynamics.entities[dynamicID].typeId == TYPEID.PV_SYSTEM_POWER) {
+                            } else if (state.dynamics.entities[dynamicID].typeId == TYPEID.INFEED_PLANT_POWER) {
+                                pv.demandDynamic = dynamicID
+                            }
+                        }
+                    } else if (state.structures.entities[childId]?.typeId == TYPEID.WIND_TURBINE) {
+                        const pv: PV = {
+                            id: v4(),
+                            leaderElectionParticipant: false,
+                            energyCommunity: ENERGYCOMMUNITY.NONE,
+                            energyCommunityDynamic: energyCommunityDynamic,
+                            gridSensorAssignment: GRIDSENSORASSIGNMENT.UNASSIGNED,
+                            gridSensorAssignmentDynamic: gridSensorAssignmentDynamic,
+                            dockerImage: "cr.siemens.com/openswarm/energy-community-controller/pv",
+                            setPoint: 0,
+                            setPointDynamic: "",
+                            demandDynamic: "",
+                        }
+                        storageEntry.pvs.push(pv)
+
+                        for (const dynamicID of state.structures.entities[childId].dynamicIds) {
+                            if (state.dynamics.entities[dynamicID].typeId == TYPEID.INFEED_PLANT_MAX_POWER) {
+                                pv.setPointDynamic = dynamicID
+                            } else if (state.dynamics.entities[dynamicID].typeId == TYPEID.INFEED_PLANT_POWER) {
                                 pv.demandDynamic = dynamicID
                             }
                         }
